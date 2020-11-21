@@ -69,12 +69,12 @@ class VisitsController extends Controller
         }
         return [
              ['class'=>$class, 'ftype'=>'input','name'=>"Time of entry",'id'=>"",'placeholder'=>__('Time of entry'), 'required'=>true, 'value' =>  Carbon::now()->toDayDateTimeString(), 'disabled'=>true,],
-             ['class'=>$class, 'ftype'=>'duration','name'=>"Duration of visit(approximate)",'id'=>"duration", 'value' =>  1, 'required'=>true,],
-            ['class'=>$class.' col-6 pr-0', 'ftype'=>'input','name'=>"Name",'id'=>"name",'placeholder'=>__('Name'),'required'=>true],
-            ['class'=>$class.' col-6 pl-0', 'lableVsisibility'=>'invisible', 'ftype'=>'input','name'=>"Surname",'id'=>"sur_name",'placeholder'=>__('surname'),'required'=>true],
-            ['class'=>$class.' col-6 pr-0', 'ftype'=>'input','name'=>"Email",'id'=>"email",'placeholder'=>__('Customer email'),'required'=>false],
-            ['class'=>$class.' col-6 pl-0', 'ftype'=>'input','name'=>"Phone",'id'=>"phone_number",'placeholder'=>__('Customer phone'),'required'=>false],
-              ['class'=>'col-md-12', 'ftype'=>'select','name'=>"Table",'id'=>"table_id",'placeholder'=>"Select table",'data'=>$tablesData,'required'=>true],
+             ['class'=>$class.' duration_cl', 'ftype'=>'duration','name'=>"Duration of visit(approximate)",'id'=>"duration", 'value' =>  1, 'required'=>true,],
+            ['class'=>$class.'  col-12', 'ftype'=>'input','name'=>"Name",'id'=>"name",'placeholder'=>__('Name'),'required'=>true],
+            ['class'=>$class.' col-12', 'lableVsisibility'=>'invisible-', 'ftype'=>'input','name'=>"Surname",'id'=>"sur_name",'placeholder'=>__('surname'),'required'=>true],
+            ['class'=>$class.' col-12', 'ftype'=>'input','name'=>"Email",'id'=>"email",'placeholder'=>__('Customer email'),'required'=>false],
+            ['class'=>$class.' col-12', 'ftype'=>'input','name'=>"Phone",'id'=>"phone_number",'placeholder'=>__('Customer phone'),'required'=>false],
+//              ['class'=>'col-md-12', 'ftype'=>'select','name'=>"Table",'id'=>"table_id",'placeholder'=>"Select table",'data'=>$tablesData,'required'=>true],
             ['class'=>'col-md-12', 'ftype'=>'input','name'=>"Note",'id'=>"note",'placeholder'=>__('Custom note'),'required'=>false],
             ['class'=>$class, 'type'=>'hidden','ftype'=>'input','name'=>"Restaurant",'id'=>"restaurant_id",'placeholder'=>__('Restaurant'),'required'=>true,'value'=>$restaurant->id],
             ['class'=>$class, 'type'=>'hidden','ftype'=>'input','name'=>"entry_time",'id'=>"entry_time",'placeholder'=>__('Time of entry'),'required'=>true,'value' =>  Carbon::now()->toDayDateTimeString()],

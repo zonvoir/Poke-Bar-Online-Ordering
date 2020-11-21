@@ -18,7 +18,7 @@
                             <h3 class="col-12 mb-0">{{ $setup['title'] }}</h3>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body cu_card_b">
                         <form action="{{ $setup['action'] }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @isset($setup['isupdate'])
@@ -39,7 +39,7 @@
                             @if (isset($setup['isupdate']))
                                 <button type="submit" class="btn btn-primary">{{ __('Update')}}</button>  
                             @else
-                                <button type="submit" class="btn btn-primary">{{ __('Insert')}}</button>  
+                                <button type="submit" class="btn btn-primary">{{ __('Visit')}}</button>  
                             @endif
                         </form>
                     </div>
