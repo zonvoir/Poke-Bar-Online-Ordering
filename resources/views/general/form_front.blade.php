@@ -9,7 +9,6 @@
     @include('users.partials.header', ['title' => __(''),])
     <div class="container-fluid mt--7">
         <div class="row">
-           
             </div>
             <div class="col-xl-8 offset-xl-2">
                 <div class="card bg-secondary shadow">

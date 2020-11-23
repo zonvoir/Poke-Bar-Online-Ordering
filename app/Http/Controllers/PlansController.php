@@ -19,9 +19,6 @@ class PlansController extends Controller
         if(!auth()->user()->hasRole('owner')){
             abort(403, 'Unauthorized action.');
         }
-
-        
-        
         $plans=Plans::get()->toArray();
         $colCounter=[4,12,6,4,3,4,4,4,4,4,4,4,4,4,4,4,4];
 

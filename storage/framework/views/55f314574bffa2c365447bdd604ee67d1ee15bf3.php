@@ -139,19 +139,19 @@
              <label class="form-control-label make_cl" for="duration">Duration of visit(approximate)</label>
              <input data-suffix="Hour" min="1" max="8" type="number" name="duration" id="duration" class="form-control form-control-alternative"  value="1" required="" autofocus>
            </div>  
-           <div class="form-group col-md-6 col-6 pr-0 o_cl">
+           <div class="form-group col-md-6 col-6 pr-0 o_cl com_c">
             <label class="form-control-label make_cl" for="name">Name</label>
             <input type="text" name="name" id="name" class="form-control form-control-alternative   " placeholder="Name" value="" autofocus="">
           </div>   
-          <div class="form-group col-md-6 col-6 pl-0 s_cl">
+          <div class="form-group col-md-6 col-6 pl-0 s_cl com_c">
             <label class="form-control-label invisible make_cl" for="sur_name">Surname</label>
             <input type="text" name="sur_name" id="sur_name" class="form-control form-control-alternative" placeholder="surname" value="" autofocus="">
           </div>                                
-          <div class="form-group col-md-6 col-6 pr-0 t_cl">
+          <div class="form-group col-md-6 col-6 pr-0 t_cl com_c">
             <label class="form-control-label make_cl" for="email">Email</label>
             <input type="text" name="email" id="email" class="form-control form-control-alternative" placeholder="Customer email" value="" autofocus="">
           </div> 
-          <div class="form-group col-md-6 col-6 pl-0 f_cl">
+          <div class="form-group col-md-6 col-6 pl-0 f_cl com_c">
             <label class="form-control-label make_cl" for="phone_number">Phone</label>
             <input type="text" name="phone_number" id="phone_number" class="form-control form-control-alternative   " placeholder="Customer phone" value="" autofocus="">
           </div> 
@@ -168,8 +168,8 @@
             </select>
           </div> -->
 
-          <div class="form-group col-md-12">
-            <label class="form-control-label make_cl" for="note">Note</label>
+          <div class="form-group col-md-12 com_c">
+            <label class="form-control-label make_cl " for="note">Note</label>
             <input type="text" name="note" id="note" class="form-control form-control-alternative   " placeholder="Custom note" value="" autofocus="">
           </div>                                
           <div class="form-group col-md-6 ">
@@ -221,11 +221,14 @@
       <div class="modal-body">
         <div class="warp_summery_sec">
          <div class="summry__head">
-          <h1><i class="fa fa-check-square-o" aria-hidden="true"></i> You're checked in</h1>
+          <h1 class="check_icon_png">
+              <img src="<?php echo e(asset('images')); ?>/icons/check.png" class="img-responsive" alt="Image">
+              You're checked in
+             </h1>
           <p><?php echo $restorant->checkin_disclaimers; ?></p>
         </div>
         <div class="order_tabel_cl">
-          <h3>CHECK-IN SUMMARY</h3>
+<!--          <h3>CHECK-IN SUMMARY</h3>-->
           <table class="table ">
             <tbody id="summ-tble-tbody">
 
@@ -233,7 +236,8 @@
           </table>
         </div>
         <div class="btn_sumer_h">
-          <button type="button" class="btn">View Menu</button>
+            
+          <a href="<?php echo e((isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS'] ?'https://':'http://').$_SERVER['HTTP_HOST'].'/restaurant/'.$restorant->subdomain); ?>" class="btn">View Menu</a>
         </div>
       </div>
     </div>
@@ -798,7 +802,8 @@
           });
           var checkInType = "<?php echo e($restorant->checkin_type); ?>";
           $(document).ready(function(){
-            if(checkInType == 'popup'){
+              let sessionActive = "<?php echo e(session('status')); ?>";
+            if(checkInType == 'popup' && !sessionActive){
               $("#checkInModal").modal('show');
               /*$("#checkInSummeryModal").modal('show');*/
               /*$("#pickDineModal").modal('show');*/

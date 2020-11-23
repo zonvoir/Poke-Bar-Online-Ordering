@@ -97,5 +97,11 @@ class Order extends Model
             return true;
         });
     }
+    /*sushant 20-11-2020*/
+    public function ratings()
+    {
+        return $this->hasOne('App\Ratings','id','order_id');
+    }
+    /*sushant 20-11-2020*/
 
 }

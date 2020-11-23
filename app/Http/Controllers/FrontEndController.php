@@ -466,7 +466,6 @@ public function restorant($alias){
         return redirect()->route('restorant',$subDomain);
     }
     $restorant = Restorant::where('subdomain',$alias)->first();
-
     if($restorant->active == 1){
         $restorant->increment('views');
 

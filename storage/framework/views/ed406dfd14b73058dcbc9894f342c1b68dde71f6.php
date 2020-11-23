@@ -9,7 +9,6 @@
     <?php echo $__env->make('users.partials.header', ['title' => __(''),], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     <div class="container-fluid mt--7">
         <div class="row">
-           
             </div>
             <div class="col-xl-8 offset-xl-2">
                 <div class="card bg-secondary shadow">
@@ -18,7 +17,7 @@
                             <h3 class="col-12 mb-0"><?php echo e($setup['title']); ?></h3>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body cu_card_b">
                         <form action="<?php echo e($setup['action']); ?>" method="POST" enctype="multipart/form-data">
                             <?php echo csrf_field(); ?>
                             <?php if(isset($setup['isupdate'])): ?>
@@ -39,7 +38,7 @@
                             <?php if(isset($setup['isupdate'])): ?>
                                 <button type="submit" class="btn btn-primary"><?php echo e(__('Update')); ?></button>  
                             <?php else: ?>
-                                <button type="submit" class="btn btn-primary"><?php echo e(__('Insert')); ?></button>  
+                                <button type="submit" class="btn btn-primary"><?php echo e(__('Visit')); ?></button>  
                             <?php endif; ?>
                         </form>
                     </div>

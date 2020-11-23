@@ -15,9 +15,9 @@
             <br/>
             <div class="tab-content orders-filters">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="input-daterange datepicker row align-items-center">
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label class="form-control-label">{{ __('Date From') }}</label>
                                         <div class="input-group">
@@ -28,7 +28,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label class="form-control-label">{{ __('Date to') }}</label>
                                         <div class="input-group">
@@ -36,6 +36,26 @@
                                                 <span class="input-group-text"><i class="ni ni-calendar-grid-58"></i></span>
                                             </div>
                                             <input name="toDate" class="form-control" placeholder="{{ __('Date to') }}" type="text"  <?php if(isset($_GET['toDate'])){echo 'value="'.$_GET['toDate'].'"';} ?>>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-control-label">{{ __('Last Status') }}</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="ni ni-watch-time"></i></span>
+                                            </div>
+                                            <select name="status" class="form-control">
+                                                @if(isset($status) && !empty($status))
+                                                <option value="">Please select status</option>
+                                                @foreach($status as $st)
+                                                <option value="{{$st->alias}}" <?php if(isset($_GET['status']) && $_GET['status'] == $st->alias){echo 'selected';} ?>>{{$st->name}}</option>
+                                                @endforeach
+                                                @else
+                                                <option value="">Please select status</option>
+                                                @endif
+                                            </select>
                                         </div>
                                     </div>
                                 </div>

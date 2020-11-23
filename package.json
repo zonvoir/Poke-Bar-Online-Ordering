@@ -2,7 +2,7 @@
     "private": true,
     "scripts": {
         "dev": "npm run development",
-        "ngrok":"./ngrok http 8000",
+        "ngrok": "./ngrok http 8000",
         "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
         "watch": "npm run development -- --watch",
         "watch-poll": "npm run watch -- --watch-poll",
@@ -10,7 +10,7 @@
         "prod": "npm run production",
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
         "zipqr": "cp .env_qr .env && zip -r qr_maker.zip ./ -x \"node_modules/*\" -x \"storage/logs/*\"   -x \"storage/debugbar/*\" -x \"storage/framework/views/*\"   -x \"storage/framework/sessions/*\" -x \"*.git*\" -x \"*.DS_Store\"  -x \".env_ft\" -x \".env_qr\"",
-        "zipupdate":"cat .diff-files.txt | zip -@ update.zip"
+        "zipupdate": "cat .diff-files.txt | zip -@ update.zip"
     },
     "devDependencies": {
         "@babel/preset-react": "^7.0.0",

@@ -96,7 +96,15 @@ class OrderController extends Controller
             //$end = Carbon::parse($_GET['toDate']);
             $orders =$orders->whereDate('created_at','<=',$_GET['toDate']);
         }
-
+        // code by sushant
+        if(isset($_GET['status']) && !empty($_GET['status'])){
+            $statusRequest = $_GET['status'];
+           // dd($statusRequest);
+            //$end = Carbon::parse($_GET['toDate']);
+            $orders =$orders->whereHas('laststatus',function($q) use($statusRequest){
+                $q->where(['alias' => $statusRequest]);
+            });
+        }
         //With downloaod
         if(isset($_GET['report'])){
             $items=array();
@@ -132,12 +140,11 @@ class OrderController extends Controller
 
             return Excel::download(new OrdersExport($items), 'orders_'.time().'.xlsx');
         }
-
+        $status = Status::get();
+         /*coded by sushant*/
         $orders = $orders->paginate(10);
 
-
-
-        return view('orders.index',['orders' => $orders,'restorants'=>$restorants,'drivers'=>$drivers,'clients'=>$clients,'parameters'=>count($_GET)!=0 ]);
+        return view('orders.index',['orders' => $orders,'restorants'=>$restorants,'drivers'=>$drivers,'clients'=>$clients,'parameters'=>count($_GET)!=0, 'status'=>$status ]);
     }
 
     /**

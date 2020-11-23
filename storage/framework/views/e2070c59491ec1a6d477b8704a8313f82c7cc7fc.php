@@ -23,9 +23,6 @@
                                     <div id="variants-area-inside">
                                     </div>
                                 </div>
-
-
-
                                 <div id="exrtas-area">
                                     <br />
                                     <label class="form-control-label" for="quantity"><?php echo e(__('Extras')); ?></label>
@@ -46,10 +43,6 @@
                                     </div>
                                 </div>
                                <?php endif; ?>
-
-
-
-
                             </div>
                         </div>
 

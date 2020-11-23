@@ -34,7 +34,7 @@ class VisitsController extends Controller
      /**
      * Parameter name
      */
-    private $parameter_name="visit";
+     private $parameter_name="visit";
 
     /**
      * Title of this crud
@@ -68,18 +68,42 @@ class VisitsController extends Controller
             $tablesData[$table->id]=$table->restoarea?$table->restoarea->name." - ".$table->name:$table->name;
         }
         return [
+           ['class'=>$class, 'ftype'=>'input','name'=>"Time of entry",'id'=>"",'placeholder'=>__('Time of entry'), 'required'=>true, 'value' =>  Carbon::now()->toDayDateTimeString()],
+           ['class'=>$class, 'ftype'=>'duration','name'=>"Duration of visit(Hour)",'id'=>"duration", 'value' =>  1, 'required'=>true,],
+           ['class'=>$class, 'ftype'=>'input','name'=>"Name",'id'=>"name",'placeholder'=>__('Name'),'required'=>true],
+           ['class'=>$class, 'lableVsisibility'=>'invisible', 'ftype'=>'input','name'=>"Surname",'id'=>"sur_name",'placeholder'=>__('Surname')],
+           ['class'=>$class.' col-6 pr-0', 'ftype'=>'input','name'=>"Email",'id'=>"email",'placeholder'=>__('Customer email'),'required'=>false],
+           ['class'=>$class, 'ftype'=>'input','name'=>"Phone",'id'=>"phone_number",'placeholder'=>__('Customer phone'),'required'=>false],
+           ['class'=>$class, 'ftype'=>'select','name'=>"Table",'id'=>"table_id",'placeholder'=>"Select table",'data'=>$tablesData,'required'=>true],
+           ['class'=>$class, 'ftype'=>'input','name'=>"Note",'id'=>"note",'placeholder'=>__('Custom note'),'required'=>false],
+           ['class'=>$class, 'type'=>'hidden','ftype'=>'input','name'=>"Restaurant",'id'=>"restaurant_id",'placeholder'=>__('Restaurant'),'required'=>true,'value'=>$restaurant->id],
+           ['type'=>'hidden','ftype'=>'input','name'=>"entry_time",'id'=>"entry_time",'placeholder'=>__('Time of entry'),'required'=>true,'value' =>  Carbon::now()->toDayDateTimeString()],
+       ];
+   }
+   private function getFieldsFront($class="col-md-6",$restaurant=null){
+        if($restaurant==null){
+            $restaurant=$this->getRestaurant();
+        }
+
+        $tables=Tables::where('restaurant_id',$restaurant->id)->get();
+        $tablesData=[];
+        foreach ($tables as $key => $table) {
+            $tablesData[$table->id]=$table->restoarea?$table->restoarea->name." - ".$table->name:$table->name;
+        }
+
+        return [
              ['class'=>$class, 'ftype'=>'input','name'=>"Time of entry",'id'=>"",'placeholder'=>__('Time of entry'), 'required'=>true, 'value' =>  Carbon::now()->toDayDateTimeString(), 'disabled'=>true,],
              ['class'=>$class.' duration_cl', 'ftype'=>'duration','name'=>"Duration of visit(approximate)",'id'=>"duration", 'value' =>  1, 'required'=>true,],
             ['class'=>$class.'  col-12', 'ftype'=>'input','name'=>"Name",'id'=>"name",'placeholder'=>__('Name'),'required'=>true],
             ['class'=>$class.' col-12', 'lableVsisibility'=>'invisible-', 'ftype'=>'input','name'=>"Surname",'id'=>"sur_name",'placeholder'=>__('surname'),'required'=>true],
             ['class'=>$class.' col-12', 'ftype'=>'input','name'=>"Email",'id'=>"email",'placeholder'=>__('Customer email'),'required'=>false],
             ['class'=>$class.' col-12', 'ftype'=>'input','name'=>"Phone",'id'=>"phone_number",'placeholder'=>__('Customer phone'),'required'=>false],
-//              ['class'=>'col-md-12', 'ftype'=>'select','name'=>"Table",'id'=>"table_id",'placeholder'=>"Select table",'data'=>$tablesData,'required'=>true],
+            /*['class'=>'col-md-12', 'ftype'=>'select','name'=>"Table",'id'=>"table_id",'placeholder'=>"Select table",'data'=>$tablesData,'required'=>true],*/
             ['class'=>'col-md-12', 'ftype'=>'input','name'=>"Note",'id'=>"note",'placeholder'=>__('Custom note'),'required'=>false],
             ['class'=>$class, 'type'=>'hidden','ftype'=>'input','name'=>"Restaurant",'id'=>"restaurant_id",'placeholder'=>__('Restaurant'),'required'=>true,'value'=>$restaurant->id],
             ['class'=>$class, 'type'=>'hidden','ftype'=>'input','name'=>"entry_time",'id'=>"entry_time",'placeholder'=>__('Time of entry'),'required'=>true,'value' =>  Carbon::now()->toDayDateTimeString()],
         ];
-    }
+   }
 
     /**
      * Display a listing of the resource.
@@ -88,12 +112,13 @@ class VisitsController extends Controller
      */
     public function index()
     {
+
         $this->authChecker();
 
         $class="col-md-4";
         $fields=$this->getFields($class);
         $fields[1]['required']=false;
-        unset($fields[5]);
+        unset($fields[0]);unset($fields[3]);unset($fields[7]);unset($fields[8]);
         array_push($fields,['class'=>$class,'ftype'=>'select','name'=>"customers.created_by",'id'=>"by",'placeholder'=>"Select who created it",'data'=>["2"=>__('customers.him_self'),"1"=>__('customers.by_restaurant')],'required'=>false]);
         array_push($fields,['class'=>$class,'editclass'=>' daterange ','ftype'=>'input','name'=>"customers.visit_time",'id'=>"created_at",'placeholder'=>"Created time",'required'=>false]);
 
@@ -137,15 +162,15 @@ class VisitsController extends Controller
             foreach ($items->get() as $key => $item) {
                 $item=array(
                     "visit_id"=>$item->id,
-                    "table"=>$item->table->name,
-                    "area"=>$item->table->restoarea?$item->table->restoarea->name:"",
+                    "table"=>isset($item->table->name) ? $item->table->name : 'Pickup',
+                    "area"=>isset($item->table->restoarea) ? $item->table->restoarea ?$item->table->restoarea->name:"" : '',
                     "created"=>$item->created_at,
                     "customer_name"=>$item->name,
                     "customer_email"=>$item->email,
                     "customer_phone_number"=>$item->phone_number,
                     "note"=>$item->note,
                     "by"=>$item->by.""=="1"?__('customers.by_restaurant'):__('customers.him_self'),
-                  );
+                );
                 array_push($itemsForExport,$item);
             }
 
@@ -154,7 +179,6 @@ class VisitsController extends Controller
 
         //Pagiinate
         $items = $items->paginate(env('PAGINATE',10));
-        
         return view($this->view_path.'index', ['setup' => [
             'usefilter'=>true,
             'title'=>__('crud.item_managment',['item'=>__($this->titlePlural)]),
@@ -185,7 +209,7 @@ class VisitsController extends Controller
             'iscontent'=>true,
             'action'=>route($this->webroute_path.'store'),
         ],
-        'fields'=>$this->getFields()]);
+        'fields'=>$this->getFieldsFront()]);
     }
 
     /**
@@ -200,7 +224,7 @@ class VisitsController extends Controller
         $item = $this->provider::create([
             'name'=>$request->name,
             'restaurant_id'=>$this->getRestaurant()->id,
-            'table_id'=>$request->table_id,
+            /*'table_id'=>$request->table_id,*/
             'phone_number'=>$request->phone_number,
             'email'=>$request->email,
             'note'=>$request->note
@@ -232,13 +256,13 @@ class VisitsController extends Controller
         $this->authChecker();
         $item=$this->provider::findOrFail($id);
         $fields=$this->getFields();
-        $fields[0]['value']=$item->table_id;
-        $fields[1]['value']=$item->name;
-        $fields[2]['value']=$item->email;
-        $fields[3]['value']=$item->phone_number;
-        $fields[4]['value']=$item->note;
-
-
+        $fields[0]['value']=Carbon::now()->toDayDateTimeString();
+        $fields[1]['value']=$item->duration;
+        $fields[2]['value']=$item->name;
+        $fields[3]['value']=$item->sur_name;
+        $fields[4]['value']=$item->email;
+        $fields[5]['value']=$item->phone_number;
+        $fields[6]['value']=$item->note;
         $parameter=[];
         $parameter[$this->parameter_name]=$id;
         return view('general.form', ['setup' => [
@@ -262,7 +286,7 @@ class VisitsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
         $this->authChecker();
         $item=$this->provider::findOrFail($id);
         $item->name=$request->name;
@@ -273,7 +297,7 @@ class VisitsController extends Controller
 
         $item->update();
         return redirect()->route($this->webroute_path.'index')->withStatus(__('crud.item_has_been_updated',['item'=>__($this->title)]));
-    
+
     }
 
     /**
@@ -292,7 +316,7 @@ class VisitsController extends Controller
             $item->delete();
             return redirect()->route($this->webroute_path.'index')->withStatus(__('crud.item_has_been_removed',['item'=>__($this->title)]));
         }
-       
+
     }
 
 
@@ -307,7 +331,7 @@ class VisitsController extends Controller
             'iscontent'=>true,
             'action'=>route('register.visit.store'),
         ],
-        'fields'=>$this->getFields('col-md-6',$restaurant)]);
+        'fields'=>$this->getFieldsFront('col-md-6',$restaurant)]);
     }
 
 
@@ -346,6 +370,6 @@ class VisitsController extends Controller
         ]);
         if($item->save()){
           return response()->json(['status' => 'ok','msg'=>'visited successfully!','data' => $item]);
-        }
-    }
+      }
+  }
 }
