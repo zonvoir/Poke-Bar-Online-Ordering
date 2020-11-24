@@ -33,7 +33,7 @@
         <input type="hidden" name="deliveryCost" id="deliveryCost" value="0" />
       </div>
       <br />
-      <br />
+   
     </div>
   </div>
   <br />

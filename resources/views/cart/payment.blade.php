@@ -1,5 +1,5 @@
 <div class="card card-profile shadow mt--300">
-    <div class="px-4">
+    <div class="">
       <div class="mt-5">
         <h3>{{ __('Checkout') }}<span class="font-weight-light"></span></h3>
       </div>
@@ -39,7 +39,14 @@
                     @if (!env('HIDE_COD',false))
                         <div class="custom-control custom-radio mb-3">
                             <input name="paymentType" class="custom-control-input" id="cashOnDelivery" type="radio" value="cod" {{ env('DEFAULT_PAYMENT','cod')=="cod"?"checked":""}}>
-                            <label class="custom-control-label" for="cashOnDelivery"><span class="delTime">{{ config('app.isqrsaas')?__('Cash / Card Terminal'): __('Cash on delivery') }}</span> <span class="picTime">{{ __('Cash on pickup') }}</span></label>
+                            <label class="custom-control-label" for="cashOnDelivery"><span class="delTime">{{ config('app.isqrsaas')?__('Cash / Card Terminal'): __('Cash on delivery') }}</span> <span class="picTime">{{ __('Cash on pickup') }}</span> 
+                             
+                            
+                                
+                            </label>
+                             <span class="payment_icon">
+                                <img class="img-fluid" src="{{asset('images')}}/icons/payment_icon.png" alt="image">
+                             </span>
                         </div>
                     @endif
 

@@ -1,11 +1,11 @@
 <div class="card card-profile shadow">
-    <div class="px-4">
+    <div class="">
       <div class="mt-5">
         <h3>{{ __('Restaurant information') }}<span class="font-weight-light"></span></h3>
       </div>
       <div class="card-content border-top">
         <br />
-        <div class="pl-lg-4">
+        <div class="">
             <p>
                 {{ $restorant->name }}<br />
                 {{ $restorant->address }}<br />
@@ -16,8 +16,9 @@
             @endif
       </div>
       </div>
-      <br />
-      <br />
+     
+
     </div>
   </div>
-  <br />
+<br>
+

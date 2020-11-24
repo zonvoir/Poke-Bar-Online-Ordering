@@ -8,7 +8,7 @@
 
         </div>
     </section>
-    <section class="section bg-secondary">
+    <section class="section bg-secondary cart_panel_cl">
 
       <div class="container">
 
@@ -61,7 +61,7 @@
                  @endif
                   
                  <!-- LOCAL ORDERING -->
-                 @include('cart.localorder.table')
+                 
 
                 
 

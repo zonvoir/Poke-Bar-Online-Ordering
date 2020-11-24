@@ -13,13 +13,25 @@
   </div>
 </section>
 
+
+
+
 <section class="section pt-lg-0 mb--5 mt--9 d-none d-md-none d-lg-block d-lx-block">
   <div class="container">
     <div class="row">
       <div class="col-lg-12">
+          
+         
+                     
+
+          
+          
+          
+          
         <div class="title white"  <?php if($restorant->description || $openingTime && $closingTime){echo 'style="border-bottom: 1px solid #f2f2f2;"';} ?> >
           <h1 class="display-3 text-white" data-toggle="modal" data-target="#modal-restaurant-info" style="cursor: pointer;">{{ $restorant->name }}</h1>
           <p class="display-4" style="margin-top: 120px">{{ $restorant->description }}</p>
+         
           <p>@if(!empty($openingTime) && !empty($closingTime))  <i class="ni ni-watch-time"></i> <span>{{ $openingTime }}</span> - <span>{{ $closingTime }}</span> | @endif  <i class="ni ni-pin-3"></i></i> <a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{ urlencode($restorant->address) }}">{{ $restorant->address }}</a>  |  <i class="ni ni-mobile-button"></i> <a href="tel:{{$restorant->phone}}">{{ $restorant->phone }} </a></p>
         </div>
       </div>
@@ -44,10 +56,26 @@
       <div class="col-lg-12">
         <div class="title">
           <h1 class="display-3 text" data-toggle="modal" data-target="#modal-restaurant-info" style="cursor: pointer;">{{ $restorant->name }}</h1>
+            
+           
           <p class="display-4 text">{{ $restorant->description }}</p>
           @if(!empty($openingTime) && !empty($closingTime))
           <p>{{ __('Today working hours') }}: <span><strong>{{ $openingTime }}</strong></span> - <span><strong>{{ $closingTime }}</strong></span></p>
           @endif
+            
+          
+               <div class="mobile_reg_visit">
+                   <div class=" mr-1">
+                       <a href="{{ route('register.visit',['restaurant_id'=>$restorant->id])}}" class="btn btn-neutral btn-icon btn-cart" style="cursor:pointer;">
+                           <span class="btn-inner--icon">
+                               <i class="fa fa-calendar-plus-o"></i>
+                           </span>
+                           <span class="nav-link-inner--text">{{ __('Check In') }}</span>
+                       </a>
+                   </div>
+               </div>    
+            
+            
         </div>
       </div>
     </div>
@@ -60,7 +88,7 @@
 
     @if(!$restorant->categories->isEmpty())
     <nav class="tabbable sticky" style="top: {{ config('app.isqrsaas') ? 64:88 }}px;">
-      <ul class="nav nav-pills bg-white mb-2">
+      <ul class="nav nav-pills bg-white mb-2 make_cus_sc">
         <li class="nav-item nav-item-category ">
           <a class="nav-link  mb-sm-3 mb-md-0 active" data-toggle="tab" role="tab" href="">{{ __('All categories') }}</a>
         </li>
@@ -96,6 +124,9 @@
           <span class="res_title"><b><a onClick="setCurrentItem({{ $item->id }})" href="javascript:void(0)">{{ $item->name }}</a></b></span><br />
           <span class="res_description">{{ $item->short_description}}</span><br />
           <span class="res_mimimum">@money($item->price, env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))</span>
+            
+              
+        
         </div>
       </div>
       @endif
@@ -118,6 +149,10 @@
   <i id="scrollTopBtn"  onclick="topFunction()" class="fa fa-arrow-up btn-danger"></i>
 
 </section>
+
+
+
+
 <!--checkin Modal -->
 <div class="modal fade" id="checkInModal" tabindex="-1" role="dialog" aria-labelledby="checkInModalTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable cust_sco" role="document">
