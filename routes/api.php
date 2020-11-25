@@ -35,7 +35,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/myorders', 'ClientController@getMyOrders');
     Route::get('/mynotifications', 'ClientController@getMyNotifications');
 
-
     Route::get('/myaddresses', 'ClientController@getMyAddresses');
     Route::get('/myaddresseswithfees/{restaurant_id}', 'ClientController@getMyAddressesWithFees');
 

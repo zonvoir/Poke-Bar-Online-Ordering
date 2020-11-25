@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\URL;
 use App\Tables;
+use Carbon\Carbon;
+use App\Ingredients;
+use App\ItemIngredients;
 
 
 class FrontEndController extends Controller
@@ -530,7 +533,8 @@ public function restorant($alias){
                 'usernames' => $usernames,
                 'canDoOrdering'=>$canDoOrdering,
                 'hasGuestOrders'=>count($previousOrderArray)>0,
-                'tables'=>$tablesData
+                'tables'=>$tablesData,
+                'visit_time' => Carbon::now()->toDayDateTimeString()
             ]);
         }else return redirect()->back()->withError(__('The selected restaurant is not active at this moment!'));
 

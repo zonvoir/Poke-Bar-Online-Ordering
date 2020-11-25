@@ -147,6 +147,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/{item}/extras/edit', 'ItemsController@editExtras')->name('extras.edit');
     Route::delete('/{item}/extras/{extras}', 'ItemsController@deleteExtras')->name('extras.destroy');
 
+    //sushant new code for ingredients
+    Route::post('/{item}/ingredients', 'ItemsController@storeIngredients')->name('item.ingredients.store');
+    Route::delete('/{item}/ingredients/{ingredients}', 'ItemsController@deleteIngredients')->name('item.ingredients.destroy');
+    Route::resource('ingredients', 'IngredientController');
+    Route::get('ingredients/del/{ingredient}', 'IngredientController@destroy')->name('ingredients.delete');
+
+
     Route::resource('categories', 'CategoriesController');
 
     Route::resource('addresses', 'AddressControler');

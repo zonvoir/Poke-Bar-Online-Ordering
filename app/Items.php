@@ -118,7 +118,10 @@ class Items extends Model
             return true;
         });
     }
-
+    public function itemIngredients()
+    {
+        return $this->hasMany('App\ItemIngredients','item_id','id');
+    }
     
 
 }

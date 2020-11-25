@@ -301,7 +301,8 @@ window.onload = function () {
                 id: $('#modalID').text(),
                 quantity: $('#quantity').val(),
                 extras:extrasSelected,
-                variantID:variantID
+                variantID:variantID,
+                remIngred: removedIngredients
               })
               .then(function (response) {
                   if(response.data.status){

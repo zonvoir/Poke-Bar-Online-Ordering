@@ -11,13 +11,25 @@
   </div>
 </section>
 
+
+
+
 <section class="section pt-lg-0 mb--5 mt--9 d-none d-md-none d-lg-block d-lx-block">
   <div class="container">
     <div class="row">
       <div class="col-lg-12">
+
+
+
+
+
+
+
+
         <div class="title white"  <?php if($restorant->description || $openingTime && $closingTime){echo 'style="border-bottom: 1px solid #f2f2f2;"';} ?> >
           <h1 class="display-3 text-white" data-toggle="modal" data-target="#modal-restaurant-info" style="cursor: pointer;"><?php echo e($restorant->name); ?></h1>
           <p class="display-4" style="margin-top: 120px"><?php echo e($restorant->description); ?></p>
+
           <p><?php if(!empty($openingTime) && !empty($closingTime)): ?>  <i class="ni ni-watch-time"></i> <span><?php echo e($openingTime); ?></span> - <span><?php echo e($closingTime); ?></span> | <?php endif; ?>  <i class="ni ni-pin-3"></i></i> <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=<?php echo e(urlencode($restorant->address)); ?>"><?php echo e($restorant->address); ?></a>  |  <i class="ni ni-mobile-button"></i> <a href="tel:<?php echo e($restorant->phone); ?>"><?php echo e($restorant->phone); ?> </a></p>
         </div>
       </div>
@@ -42,14 +54,30 @@
       <div class="col-lg-12">
         <div class="title">
           <h1 class="display-3 text" data-toggle="modal" data-target="#modal-restaurant-info" style="cursor: pointer;"><?php echo e($restorant->name); ?></h1>
+
+
           <p class="display-4 text"><?php echo e($restorant->description); ?></p>
           <?php if(!empty($openingTime) && !empty($closingTime)): ?>
           <p><?php echo e(__('Today working hours')); ?>: <span><strong><?php echo e($openingTime); ?></strong></span> - <span><strong><?php echo e($closingTime); ?></strong></span></p>
           <?php endif; ?>
-        </div>
-      </div>
-    </div>
-  </div>
+
+          
+          <div class="mobile_reg_visit">
+           <div class=" mr-1">
+             <a href="<?php echo e(route('register.visit',['restaurant_id'=>$restorant->id])); ?>" class="btn btn-neutral btn-icon btn-cart" style="cursor:pointer;">
+               <span class="btn-inner--icon">
+                 <i class="fa fa-calendar-plus-o"></i>
+               </span>
+               <span class="nav-link-inner--text"><?php echo e(__('Check In')); ?></span>
+             </a>
+           </div>
+         </div>    
+
+
+       </div>
+     </div>
+   </div>
+ </div>
 </section>
 
 <section class="section pt-lg-0" id="restaurant-content" style="padding-top: 0px">
@@ -58,7 +86,7 @@
 
     <?php if(!$restorant->categories->isEmpty()): ?>
     <nav class="tabbable sticky" style="top: <?php echo e(config('app.isqrsaas') ? 64:88); ?>px;">
-      <ul class="nav nav-pills bg-white mb-2">
+      <ul class="nav nav-pills bg-white mb-2 make_cus_sc">
         <li class="nav-item nav-item-category ">
           <a class="nav-link  mb-sm-3 mb-md-0 active" data-toggle="tab" role="tab" href=""><?php echo e(__('All categories')); ?></a>
         </li>
@@ -94,6 +122,9 @@
           <span class="res_title"><b><a onClick="setCurrentItem(<?php echo e($item->id); ?>)" href="javascript:void(0)"><?php echo e($item->name); ?></a></b></span><br />
           <span class="res_description"><?php echo e($item->short_description); ?></span><br />
           <span class="res_mimimum"><?php echo money($item->price, env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true)); ?></span>
+
+
+
         </div>
       </div>
       <?php endif; ?>
@@ -116,6 +147,10 @@
   <i id="scrollTopBtn"  onclick="topFunction()" class="fa fa-arrow-up btn-danger"></i>
 
 </section>
+
+
+
+
 <!--checkin Modal -->
 <div class="modal fade" id="checkInModal" tabindex="-1" role="dialog" aria-labelledby="checkInModalTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable cust_sco" role="document">
@@ -132,7 +167,7 @@
             <input type="hidden" name="restaurant_id" value="<?php echo e($restorant->id); ?>">
             <div class="form-group col-md-6 ">
               <label class="form-control-label make_cl" for="">Time of entry</label>
-              <input step=".01" type="text" name="" id="" class="form-control form-control-alternative   " placeholder="Time of entry" value="Wed, Nov 18, 2020 11:51 AM" required="" disabled="" autofocus="">
+              <input step=".01" type="text" name="" id="" class="form-control form-control-alternative   " placeholder="Time of entry" value="<?php echo e($visit_time); ?>" required="" disabled="" autofocus="">
             </div> 
 
             <div class="form-group col-md-6 plus_minus">
@@ -222,13 +257,13 @@
         <div class="warp_summery_sec">
          <div class="summry__head">
           <h1 class="check_icon_png">
-              <img src="<?php echo e(asset('images')); ?>/icons/check.png" class="img-responsive" alt="Image">
-              You're checked in
-             </h1>
+            <img src="<?php echo e(asset('images')); ?>/icons/check.png" class="img-responsive" alt="Image">
+            You're checked in
+          </h1>
           <p><?php echo $restorant->checkin_disclaimers; ?></p>
         </div>
         <div class="order_tabel_cl">
-<!--          <h3>CHECK-IN SUMMARY</h3>-->
+          <!--          <h3>CHECK-IN SUMMARY</h3>-->
           <table class="table ">
             <tbody id="summ-tble-tbody">
 
@@ -236,7 +271,7 @@
           </table>
         </div>
         <div class="btn_sumer_h">
-            
+
           <a href="<?php echo e((isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS'] ?'https://':'http://').$_SERVER['HTTP_HOST'].'/restaurant/'.$restorant->subdomain); ?>" class="btn">View Menu</a>
         </div>
       </div>
@@ -311,6 +346,7 @@
   var variantID=null;
   var CASHIER_CURRENCY = "<?php echo  env('CASHIER_CURRENCY','usd') ?>";
   var LOCALE="<?php echo  App::getLocale() ?>";
+  var removedIngredients=[];
 
     /*
     * Price formater
@@ -554,9 +590,9 @@
 
 
       function setCurrentItem(id){
-
-
+        removedIngredients=[];
         var item=items[id];
+        console.log(item)
         currentItem=item;
         previouslySelected=[];
         $('#modalTitle').text(item.name);
@@ -580,7 +616,7 @@
           $("#modalDialogItem").addClass("col-sm-6 col-md-6 col-lg-6 offset-3");
         }
 
-        $('#modalDescription').html(item.description);
+        $('#ingredientDescription').html(item.ingredients);
 
 
         if(item.has_variants){
@@ -593,10 +629,6 @@
            $('#variants-area').show();
            setVariants();
            //$('#modalPrice').html("dynamic");
-
-
-
-
          }else{
             //Normal
             currentItemSelectedPrice=item.priceNotFormated;
@@ -618,7 +650,6 @@
           console.log('has extras');
           $('#exrtas-area-inside').empty();
           item.extras.forEach(element => {
-            console.log(element);
             $('#exrtas-area-inside').append('<div class="custom-control custom-checkbox mb-3"><input onclick="recalculatePrice('+id+');" class="custom-control-input" id="'+element.id+'" name="extra"  value="'+element.price+'" type="checkbox"><label class="custom-control-label" for="'+element.id+'">'+element.name+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+'+element.priceFormated+'</label></div>');
           });
           $('#exrtas-area').show();
@@ -660,10 +691,20 @@
           foreach ($formatedExtras as &$element) {
             $element->priceFormated=@money($element->price, env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))."";
           }
-
+          $ingredients = '';
+          $addedIngredients = $item->itemIngredients;
+          if(isset($addedIngredients) && !empty($addedIngredients)){
+            foreach($addedIngredients as $ingredient){
+              if($ingredient->modifiable == 'YES'){
+                $ingredients .= '<span class="label label-primary ingredient_span">'.$ingredient->ingredients->name.'<i onclick="removeAddIngredient(this)" data-id="'.$ingredient->id.'" data-status="added" class="fa fa-times" aria-hidden="true"></i></span>';  
+              }else{
+                $ingredients .= '<span class="label label-primary ingredient_span">'.$ingredient->ingredients->name.'<i data-id="'.$ingredient->id.'" class="fa fa-check" aria-hidden="true"></i></span>';  
+              }
+              
+            }
+          }
             //Now add the variants and optins to the item data
           $itemOptions=$item->options;
-
           $theArray=array(
             'name'=>$item->name,
             'id'=>$item->id,
@@ -674,7 +715,8 @@
             'options'=>$item->options,
             'variants'=>$item->variants,
             'has_variants'=>$item->has_variants==1&&$item->options->count()>0,
-            'description'=>$item->description
+            'description'=>$item->description,
+            'ingredients'=>$ingredients
           );
           echo "items[".$item->id."]=".json_encode($theArray).";";
         }
@@ -682,6 +724,31 @@
       ?>
     </script>
     <script type="text/javascript">
+      function removeA(arr) {
+        var what, a = arguments, L = a.length, ax;
+        while (L > 1 && arr.length) {
+          what = a[--L];
+          while ((ax= arr.indexOf(what)) !== -1) {
+            arr.splice(ax, 1);
+          }
+        }
+        return arr;
+      }
+      function removeAddIngredient(e) {
+        if($(e).attr('data-status') == 'added'){
+          $(e).attr('data-status','removed')
+          removedIngredients.push($(e).attr('data-id'));
+          $(e).removeClass('fa-check')
+          $(e).addClass('fa-plus')
+          $(e).parent('span').addClass('deactive_ing')
+        }else if($(e).attr('data-status') == 'removed'){
+          removeA(removedIngredients, $(e).attr('data-id'));
+          $(e).attr('data-status','added')
+          $(e).removeClass('fa-plus')
+          $(e).addClass('fa-check')
+          $(e).parent('span').removeClass('deactive_ing')
+        }
+      }
       function getLocation(callback){
         $.ajaxSetup({
           headers: {
@@ -802,7 +869,7 @@
           });
           var checkInType = "<?php echo e($restorant->checkin_type); ?>";
           $(document).ready(function(){
-              let sessionActive = "<?php echo e(session('status')); ?>";
+            let sessionActive = "<?php echo e(session('status')); ?>";
             if(checkInType == 'popup' && !sessionActive){
               $("#checkInModal").modal('show');
               /*$("#checkInSummeryModal").modal('show');*/

@@ -28,6 +28,12 @@
 
         </a>
     </li>
+     <li class="nav-item">
+        <a class="nav-link" href="<?php echo e(route('ingredients.index')); ?>">
+            <i class="ni ni-ui-04 text-pink"></i> <?php echo e(__('Ingredients')); ?>
+
+        </a>
+    </li>
     <li class="nav-item">
         <a class="nav-link" href="<?php echo e(route('items.index')); ?>">
             <i class="ni ni-collection text-pink"></i> <?php echo e(__('Menu')); ?>

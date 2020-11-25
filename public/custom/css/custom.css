@@ -1292,6 +1292,33 @@ box-shadow: 0px 11px 15px -7px rgba(0,0,0,0.2), 0px 24px 38px 3px rgb(0 0 0 / 5%
 }
 
 
+.ingredient_span i {
+    margin-left: 4px;
+    color: red;
+    font-size: 13px;
+    cursor: pointer;
+}
+.ingredient_span {
+       background-color: #5e72e4;
+    padding: 8px;
+    border-radius: 30px;
+    border: 1px solid #ececec;
+    font-size: 10px;
+    display: inline-block;
+    margin-top: 10px;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.ingredient_span .fa-plus{    color: #bfff6d;}
+
+.deactive_ing {
+    opacity: 0.5;
+}
+
+.ingredient_span .fa-check{color: #77e624; cursor: inherit;}
+
 /*============Responsive============*/
 
 /*Mobile*/
@@ -1353,3 +1380,4 @@ box-shadow: 0px 11px 15px -7px rgba(0,0,0,0.2), 0px 24px 38px 3px rgb(0 0 0 / 5%
 
 
 }
+

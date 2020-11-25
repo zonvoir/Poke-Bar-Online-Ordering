@@ -8,9 +8,11 @@ use App\Restorant;
 use App\Extras;
 use Image;
 use App\Plans;
-
 use App\Imports\ItemsImport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Ingredients;
+use App\ItemIngredients;
+
 
 
 class ItemsController extends Controller
@@ -120,13 +122,14 @@ class ItemsController extends Controller
     {
         //if item belongs to owner restorant menu return view
         if(auth()->user()->hasRole('owner') && $item->category->restorant->id == auth()->user()->restorant->id || auth()->user()->hasRole('admin')){
-        
             return view('items.edit', 
             [
                 'item' => $item, 
                 'setup'=>['items'=>$item->variants()->paginate(100)],
                 'restorant' => $item->category->restorant, 
-                'restorant_id' => $item->category->restorant->id]);
+                'restorant_id' => $item->category->restorant->id,
+                'ingredients' => Ingredients::pluck('name','id')->toArray()
+            ]);
         }else{
             return redirect()->route('items.index')->withStatus(__("No Access"));
         }
@@ -273,5 +276,30 @@ class ItemsController extends Controller
         $extras->delete();
 
         return redirect()->route('items.edit',['item' => $item, 'restorant' => $item->category->restorant, 'restorant_id' => $item->category->restorant->id])->withStatus(__('Extras successfully deleted.'));
+    }
+    public function storeIngredients(Request $request, Items $item)
+    {
+        if($request->ingredient_id.""==""){
+            //New
+            $ingredient = new ItemIngredients;
+            $ingredient->ingredient_id = $request->ingredients_id;
+            $ingredient->quantity = strip_tags($request->ingredients_qty);
+            $ingredient->modifiable = $request->modifiable == 'on' ? 'YES' : 'NO';
+            $ingredient->item_id = $item->id;
+            $ingredient->save();
+        }else{
+            //Update
+            $ingredient = ItemIngredients::where(['id'=>$request->ingredient_id])->get()->first();
+            $ingredient->ingredient_id = $request->ingredients_id;
+            $ingredient->quantity = strip_tags($request->ingredients_qty);
+            $ingredient->modifiable = $request->modifiable == 'on' ? 'YES' : 'NO';
+            $ingredient->update();
+        }
+        return redirect()->route('items.edit',['item' => $item, 'restorant' => $item->category->restorant, 'restorant_id' => $item->category->restorant->id])->withStatus(__('Ingredients successfully added/modified.'));
+    }
+    public function deleteIngredients(Items $item, ItemIngredients $ingredients)
+    {
+        $ingredients->delete();
+        return redirect()->route('items.edit',['item' => $item, 'restorant' => $item->category->restorant, 'restorant_id' => $item->category->restorant->id])->withStatus(__('Ingredients successfully deleted.'));
     }
 }

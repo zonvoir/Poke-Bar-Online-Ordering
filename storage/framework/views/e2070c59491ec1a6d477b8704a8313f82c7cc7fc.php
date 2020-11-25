@@ -17,7 +17,8 @@
                             <div class="col-sm col-md col-lg col-lg" id="modalItemDetailsPart">
                                 <input id="modalID" type="hidden"></input>
                                 <span id="modalPrice" class="new-price"></span>
-                                <p id="modalDescription"></p>
+                                <!-- <div id="modalDescription"></div> -->
+                                <div id="ingredientDescription"></div>
                                 <div id="variants-area">
                                     <label class="form-control-label"><?php echo e(__('Select your options')); ?></label>
                                     <div id="variants-area-inside">

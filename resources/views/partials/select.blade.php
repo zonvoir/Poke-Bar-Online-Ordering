@@ -3,7 +3,8 @@
     <label class="form-control-label">{{ __($name) }}</label><br />
 
     <select class="form-control form-control-alternative"  name="{{ $id }}" id="{{  $id }}">
-        <option disabled selected value> {{ __('Select')." ".__($name)}} </option>
+        <option selected value> {{ __('Select')." ".__($name)}} </option>
+        @if(isset($data) && !empty($data))
         @foreach ($data as $key => $item)
             @if (old($id)&&old($id).""==$key."")
                 <option  selected value="{{ $key }}">{{ __($item) }}</option>
@@ -15,6 +16,7 @@
                 <option value="{{ $key }}">{{ __($item) }}</option>
             @endif
         @endforeach
+        @endif
     </select>
 
 

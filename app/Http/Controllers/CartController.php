@@ -71,7 +71,7 @@ class CartController extends Controller
             }
 
 
-            Cart::add((new \DateTime())->getTimestamp(), $cartItemName, $cartItemPrice, $request->quantity, array('id'=>$item->id,'variant'=>$request->variantID, 'extras'=>$request->extras,'restorant_id'=>$restID,'image'=>$item->icon,'friendly_price'=>  Money($cartItemPrice, env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))->format() ));
+            Cart::add((new \DateTime())->getTimestamp(), $cartItemName, $cartItemPrice, $request->quantity, array('id'=>$item->id,'variant'=>$request->variantID, 'extras'=>$request->extras, 'removed_ingred' => $request->remIngred, 'restorant_id'=>$restID,'image'=>$item->icon,'friendly_price'=>  Money($cartItemPrice, env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))->format() ));
 
             return response()->json([
                 'status' => true,
