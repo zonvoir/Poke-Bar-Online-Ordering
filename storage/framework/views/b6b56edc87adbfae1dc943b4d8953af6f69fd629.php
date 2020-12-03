@@ -112,12 +112,12 @@
         <script src="<?php echo e(asset('vendor')); ?>/flatpickr/flatpickr.js"></script>
         
         <!-- OneSignal -->
-        <script src="<?php echo e(asset('vendor')); ?>/OneSignalSDK/OneSignalSDK.js" async=""></script>
+        <!-- <script src="<?php echo e(asset('vendor')); ?>/OneSignalSDK/OneSignalSDK.js" async=""></script>
         <script>
              var ONESIGNAL_APP_ID = "<?php echo e(env('ONESIGNAL_APP_ID')); ?>";
              var USER_ID = '<?php echo e(auth()->user()?auth()->user()->id:""); ?>';
-        </script>
-        <script src="<?php echo e(asset('custom')); ?>/js/onesignal.js"></script>
+        </script> -->
+       <!--  <script src="<?php echo e(asset('custom')); ?>/js/onesignal.js"></script> -->
 
         <?php echo $__env->yieldPushContent('js'); ?>
         <?php echo $__env->yieldContent('js'); ?>

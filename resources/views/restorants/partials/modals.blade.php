@@ -16,8 +16,11 @@
                             </div>
                             <div class="col-sm col-md col-lg col-lg" id="modalItemDetailsPart">
                                 <input id="modalID" type="hidden"></input>
+                                <span id="modalOldPrice" class="new-price"></span>
                                 <span id="modalPrice" class="new-price"></span>
                                 <!-- <div id="modalDescription"></div> -->
+                                <br>
+                                <label class="form-control-label" for="ingredientDescription">{{ __('Ingredients') }}</label>
                                 <div id="ingredientDescription"></div>
                                 <div id="variants-area">
                                     <label class="form-control-label">{{ __('Select your options') }}</label>

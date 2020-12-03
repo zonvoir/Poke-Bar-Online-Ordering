@@ -14,7 +14,7 @@ class Items extends Model
     
     protected $table = 'items';
     protected $appends = ['logom','icon','short_description'];
-    protected $fillable = ['name','description','image','price','category_id','vat'];
+    protected $fillable = ['name','description','image','price','category_id','vat','discount_allowed','discounted_price'];
     protected $imagePath='/uploads/restorants/';
 
     protected function getImge($imageValue,$default,$version="_large.jpg"){

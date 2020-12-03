@@ -11,8 +11,11 @@
                 <i class="ni ni-basket text-success"></i> {{ __('Live Orders') }}<div class="blob red"></div>
             </a>
         </li>
-    
-    
+        <li class="nav-item">
+            <a class="nav-link" href="{{route('admin.restaurant.assistant')}}">
+                <i class="ni ni-email-83 text-success"></i> {{ __('Assistant') }}<div class="blob red"></div>
+            </a>
+        </li>
         <li class="nav-item">
             <a class="nav-link" href="{{ route('orders.index') }}">
                 <i class="ni ni-basket text-orange"></i> {{ __('Orders') }}

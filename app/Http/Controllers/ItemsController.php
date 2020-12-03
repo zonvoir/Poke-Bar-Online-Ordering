@@ -150,12 +150,15 @@ class ItemsController extends Controller
         if(isset($request->vat)){
             $item->vat= $request->vat;
         }
-       
-        
         $item->available=$request->exists('itemAvailable');
         $item->has_variants=$request->exists('has_variants');
-
-       
+        if($request->discountAllowed == 'on'){
+             $item->discount_allowed = 'YES';
+             $item->discounted_price = $request->item_dicount_price;
+        }else{
+            $item->discount_allowed = 'NO';
+             $item->discounted_price = null;
+        }
         if($request->hasFile('item_image')){
 
             if($request->hasFile('item_image')){

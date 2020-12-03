@@ -11,20 +11,10 @@
   </div>
 </section>
 
-
-
-
 <section class="section pt-lg-0 mb--5 mt--9 d-none d-md-none d-lg-block d-lx-block">
   <div class="container">
     <div class="row">
       <div class="col-lg-12">
-
-
-
-
-
-
-
 
         <div class="title white"  <?php if($restorant->description || $openingTime && $closingTime){echo 'style="border-bottom: 1px solid #f2f2f2;"';} ?> >
           <h1 class="display-3 text-white" data-toggle="modal" data-target="#modal-restaurant-info" style="cursor: pointer;"><?php echo e($restorant->name); ?></h1>
@@ -331,6 +321,35 @@
  </div>
 </div>
 </div>
+<!-- chat box -->
+<div class="floating-chat" data-toggle="tooltip" data-placement="left" title="Request Assistance">
+  <i class="fa fa-comments" aria-hidden="true" tool-tip></i>
+  <div class="chat">
+    <div class="header">
+      <span class="title">
+       <div class="d-flex flex-row">
+         <div class="custom-control custom-radio custom-control-inline">
+           <input type="radio" class="custom-control-input" id="managerRadio" name="sendTo" value="manager" checked>
+           <label class="custom-control-label" for="managerRadio">Manager</label>
+         </div>
+         <div class="custom-control custom-radio custom-control-inline">
+           <input type="radio" class="custom-control-input" id="serverRadio" name="sendTo" value="server">
+           <label class="custom-control-label" for="serverRadio">Server</label>
+         </div>
+       </div>
+     </span>
+     <button id="close-chat-btn">
+      <i class="fa fa-times" aria-hidden="true"></i>
+    </button>         
+  </div>
+  <ul class="messages">
+  </ul>
+  <div class="footer">
+    <div class="text-box" contenteditable="true" disabled="true"></div>
+    <button id="sendMessage">send</button>
+  </div>
+</div>
+</div>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('js'); ?>
@@ -386,7 +405,7 @@
           success:function(response){
             if(response.status){
               response.data.forEach(element => {
-                $('#exrtas-area-inside').append('<div class="custom-control custom-checkbox mb-3"><input onclick="recalculatePrice('+element.item_id+');" class="custom-control-input" id="'+element.id+'" name="extra"  value="'+element.price+'" type="checkbox"><label class="custom-control-label" for="'+element.id+'">'+element.name+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+'+formatPrice(element.price)+'</label></div>');
+                $('#exrtas-area-inside').append('<div class="form-check-inline"><div class="custom-control custom-checkbox mb-3"><input onclick="recalculatePrice('+element.item_id+');" class="custom-control-input" id="'+element.id+'" name="extra"  value="'+element.price+'" type="checkbox"><label class="custom-control-label" for="'+element.id+'">'+element.name+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+'+formatPrice(element.price)+'</label></div></div>');
               });
               $('#exrtas-area').show();
 
@@ -597,7 +616,13 @@
         previouslySelected=[];
         $('#modalTitle').text(item.name);
         $('#modalName').text(item.name);
-        $('#modalPrice').html(item.price);
+        if(item.isDiscount == 'YES'){
+          $('#modalOldPrice').html('Price: <del style="color:red">'+item.oldPrice+'</del>');
+          $('#modalPrice').html(item.price);
+        }else{
+          $('#modalOldPrice').html('');
+          $('#modalPrice').html(item.price);
+        }
         $('#modalID').text(item.id);
 
         if(item.image != "/default/restaurant_large.jpg"){
@@ -650,7 +675,7 @@
           console.log('has extras');
           $('#exrtas-area-inside').empty();
           item.extras.forEach(element => {
-            $('#exrtas-area-inside').append('<div class="custom-control custom-checkbox mb-3"><input onclick="recalculatePrice('+id+');" class="custom-control-input" id="'+element.id+'" name="extra"  value="'+element.price+'" type="checkbox"><label class="custom-control-label" for="'+element.id+'">'+element.name+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+'+element.priceFormated+'</label></div>');
+            $('#exrtas-area-inside').append('<div class="form-check-inline"><div class="custom-control custom-checkbox mb-3"><input onclick="recalculatePrice('+id+');" class="custom-control-input" id="'+element.id+'" name="extra"  value="'+element.price+'" type="checkbox"><label class="custom-control-label" for="'+element.id+'">'+element.name+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+'+element.priceFormated+'</label></div></div>');
           });
           $('#exrtas-area').show();
         }
@@ -696,9 +721,11 @@
           if(isset($addedIngredients) && !empty($addedIngredients)){
             foreach($addedIngredients as $ingredient){
               if($ingredient->modifiable == 'YES'){
-                $ingredients .= '<span class="label label-primary ingredient_span">'.$ingredient->ingredients->name.'<i onclick="removeAddIngredient(this)" data-id="'.$ingredient->id.'" data-status="added" class="fa fa-times" aria-hidden="true"></i></span>';  
+                /*$ingredients .= '<span class="label label-primary ingredient_span">'.$ingredient->ingredients->name.'<i onclick="removeAddIngredient(this)" data-id="'.$ingredient->id.'" data-status="added" class="fa fa-times" aria-hidden="true"></i></span>'; */ 
+                $ingredients .= '<div class="form-check-inline"><div class="custom-control custom-checkbox mb-3"><input onclick="removeAddIngredient(this)" data-id="'.$ingredient->id.'" data-status="added" class="custom-control-input" id="ingred_chk_'.$ingredient->id.'" type="checkbox"><label class="custom-control-label" for="ingred_chk_'.$ingredient->id.'">'.$ingredient->ingredients->name.'</label></div></div>'; 
               }else{
-                $ingredients .= '<span class="label label-primary ingredient_span">'.$ingredient->ingredients->name.'<i data-id="'.$ingredient->id.'" class="fa fa-check" aria-hidden="true"></i></span>';  
+                /*$ingredients .= '<span class="label label-primary ingredient_span">'.$ingredient->ingredients->name.'<i data-id="'.$ingredient->id.'" class="fa fa-check" aria-hidden="true"></i></span>';*/ 
+                $ingredients .= '<div class="form-check-inline"><div class="custom-control custom-checkbox mb-3"><input class="custom-control-input" id="ingred_chk_'.$ingredient->id.'" type="checkbox" checked="checked" disabled><label class="custom-control-label" for="ingred_chk_'.$ingredient->id.'">'.$ingredient->ingredients->name.'</label></div></div>';  
               }
               
             }
@@ -708,8 +735,10 @@
           $theArray=array(
             'name'=>$item->name,
             'id'=>$item->id,
-            'priceNotFormated'=>$item->price,
-            'price'=>@money($item->price, env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))."",
+            'isDiscount' => $item->discount_allowed,
+            'oldPrice' => @money($item->price, env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))."",
+            'priceNotFormated'=>$item->discount_allowed == 'NO' ? $item->price : $item->discounted_price,
+            'price'=>$item->discount_allowed == 'NO' ? @money($item->price, env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))."" : @money($item->discounted_price, env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))."",
             'image'=>$item->logom,
             'extras'=>$formatedExtras,
             'options'=>$item->options,
@@ -748,6 +777,7 @@
           $(e).addClass('fa-check')
           $(e).parent('span').removeClass('deactive_ing')
         }
+        console.log(removedIngredients);
       }
       function getLocation(callback){
         $.ajaxSetup({
@@ -976,8 +1006,120 @@
 })
 </script>
 <script src="<?php echo e(asset('js')); ?>/bootstrap-input-spinner.js"></script>
+<script>$("#duration").inputSpinner()</script>
 <script>
-  $("#duration").inputSpinner()
+  var element = $('.floating-chat');
+  var myStorage = localStorage;
+
+  if (!myStorage.getItem('chatID')) {
+    myStorage.setItem('chatID', createUUID());
+  }
+  setTimeout(function() {
+    element.addClass('enter');
+  }, 1000);
+
+  element.click(openElement);
+
+  function openElement() {
+    console.log('open element')
+    var messages = element.find('.messages');
+    var textInput = element.find('.text-box');
+    element.find('>i').hide();
+    element.addClass('expand');
+    element.find('.chat').addClass('enter');
+    var strLength = textInput.val().length * 2;
+    textInput.keydown(onMetaAndEnter).prop("disabled", false).focus();
+    element.off('click', openElement);
+    element.find('.header button').click(closeElement);
+    element.find('#sendMessage').click(sendNewMessage);
+    messages.scrollTop(messages.prop("scrollHeight"));
+    if($('.messages').find('li.unread').length > 0){
+      getMessages($('.messages'));
+    }
+  }
+
+  function closeElement() {
+    console.log('close element')
+    window.clearInterval(Interval);
+    element.find('.chat').removeClass('enter').hide();
+    element.find('>i').show();
+    element.removeClass('expand');
+    element.find('.header button').off('click', closeElement);
+    element.find('#sendMessage').off('click', sendNewMessage);
+    element.find('.text-box').off('keydown', onMetaAndEnter).prop("disabled", true).blur();
+    setTimeout(function() {
+      element.find('.chat').removeClass('enter').show()
+      element.click(openElement);
+    }, 500);
+  }
+
+  function createUUID() {
+    // http://www.ietf.org/rfc/rfc4122.txt
+    var s = [];
+    var hexDigits = "0123456789abcdef";
+    for (var i = 0; i < 36; i++) {
+      s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+    }
+    s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+    s[8] = s[13] = s[18] = s[23] = "-";
+
+    var uuid = s.join("");
+    return uuid;
+  }
+
+  function sendNewMessage() {
+    var userInput = $('.text-box');
+    var sendTo = $('input[name="sendTo"]:checked').val();
+    var newMessage = userInput.html().replace(/\<div\>|\<br.*?\>/ig, '\n').replace(/\<\/div\>/g, '').trim().replace(/\n/g, '<br>');
+    if (!newMessage) return;
+    var data = {'sendTo':sendTo,'chatId':myStorage.chatID,'restorant_id':'<?php echo e($restorant->id); ?>','msg':newMessage}
+    var messagesContainer = $('.messages');
+    $.post("<?php echo e(route('send-message')); ?>",data,function(resp,status){
+      if(resp.status){
+        messagesContainer.append([
+          '<li class="self unread">',
+          newMessage,
+          '</li>'
+          ].join('')); 
+        getMessages(messagesContainer); 
+      }
+    })
+    // clean out old message
+    userInput.html('');
+    // focus on input
+    userInput.focus();
+
+    messagesContainer.finish().animate({
+      scrollTop: messagesContainer.prop("scrollHeight")
+    }, 250);
+  }
+
+  function onMetaAndEnter(event) {
+    if ((event.metaKey || event.ctrlKey) && event.keyCode == 13) {
+      sendNewMessage();
+    }
+  }
+  var Interval = '';
+  function getMessages(messagesContainer) {
+    var data = {'chatId':myStorage.chatID,'restorant_id':'<?php echo e($restorant->id); ?>'};
+     Interval = window.setInterval(function(){
+      $.get("<?php echo e(route('get-message')); ?>",data,function(resp,status){
+        if(resp.status && resp.data){
+          var newMessage = resp.data.replace(/\<div\>|\<br.*?\>/ig, '\n').replace(/\<\/div\>/g, '').trim().replace(/\n/g, '<br>');
+          if (!newMessage) return;
+          if(messagesContainer.find('li.unread').length > 0){
+            messagesContainer.append([
+              '<li class="other">',
+              newMessage,
+              '</li>'
+              ].join(''));  
+            messagesContainer.find('li.unread').removeClass('unread').addClass('read');
+          }
+        }
+      })
+    }, 10000); 
+  }
 </script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.front', ['class' => ''], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/qrcode/resources/views/restorants/show.blade.php ENDPATH**/ ?>

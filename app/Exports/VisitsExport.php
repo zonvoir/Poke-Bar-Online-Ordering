@@ -16,12 +16,14 @@ class VisitsExport implements FromArray, WithHeadings
             "visit_id",
             "table",
             "area",
-            "created",
             "customer_name",
             "customer_email",
             "customer_phone_number",
             "note",
-            "by"      
+            "by",
+            "duration_of_visit",
+            "visit_time",
+            "created",
         ];
     }
 

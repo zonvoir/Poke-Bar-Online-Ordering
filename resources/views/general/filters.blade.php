@@ -2,6 +2,7 @@
 <div class="tab-content orders-filters">
     <form>
         <div class="row">
+            @php unset($fields[13]);unset($fields[12]);$fields[2]['required']=false;$fields[2]['required']=false; @endphp
             @include('partials.fields',['fiedls'=>$fields])
         </div>
 

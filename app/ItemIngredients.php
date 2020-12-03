@@ -12,10 +12,6 @@ class ItemIngredients extends Model
    /* protected $fillable = [
         'name'
     ];*/
-   /* public function ingredients()
-    {
-        return $this->hasOne('App\ingredients','id','ingredient_id');
-    }*/
     public function ingredients()
     {
         return $this->belongsTo('App\Ingredients','ingredient_id');

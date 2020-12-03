@@ -53,7 +53,7 @@ class Order extends Model
 
     public function items()
     {
-        return $this->belongsToMany('App\Items','order_has_items','order_id','item_id')->withPivot(['qty','extras','vat','vatvalue','variant_price','variant_name']);
+        return $this->belongsToMany('App\Items','order_has_items','order_id','item_id')->withPivot(['qty','extras','vat','vatvalue','variant_price','variant_name','removed_ingredients']);
     }
 
 

@@ -1,3 +1,4 @@
+
 <div class="form-group <?php echo e($errors->has($id) ? ' has-danger' : ''); ?>  <?php if(isset($class)): ?> <?php echo e($class); ?> <?php endif; ?>">
 
     <label class="form-control-label"><?php echo e(__($name)); ?></label><br />

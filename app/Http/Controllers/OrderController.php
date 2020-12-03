@@ -26,6 +26,10 @@ use Unicodeveloper\Paystack\Paystack;
 use App\Models\Variants;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cookie;
+use App\ItemIngredients;
+
+
+
 
 class OrderController extends Controller
 {
@@ -160,6 +164,7 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
+        //dd($request->all());
 
         $restorant_id=null;
         foreach (Cart::getContent() as $key => $item) {
@@ -169,7 +174,6 @@ class OrderController extends Controller
         $restorant = Restorant::findOrFail($restorant_id);
 
         $orderPrice=Cart::getSubTotal();
-
         
 
 
@@ -206,7 +210,6 @@ class OrderController extends Controller
         
         //Else, based on table id, decide if new, or use existing order
         $isOldLocalOrder=false;
-
         //Create 
         if(config('app.isqrsaas')&&$isDineIn){
             if(!$request->table_id){
@@ -257,7 +260,7 @@ class OrderController extends Controller
             //Use client
             $order->client_id = auth()->user()->id;
         }
-       
+   
         $order->delivery_price = $isDelivery?$request->deliveryCost:0;
         if($isOldLocalOrder){
             $order->order_price = $order->order_price+$orderPrice;
@@ -267,7 +270,6 @@ class OrderController extends Controller
             $order->order_price = $orderPrice;
             $order->comment = $request->comment ? strip_tags($request->comment."") : "";
         }
-       
         $order->payment_method = $request->paymentType;
         $order->fee = $restorant_fee->fee;
         $order->fee_value = $order_fee;
@@ -278,9 +280,10 @@ class OrderController extends Controller
         }
 
         $restorant_min_order = $restorant->minimum;
+        //dd( $restorant_min_order);
         if(floatval($restorant_min_order)>=$order->order_price){
             //We have problem, minimum order is not reached
-            return redirect()->route('cart.checkout')->withError(__('The minimmum order value is').": ".money(floatval($restorant_min_order->minimum), env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true)))->withInput();
+            return redirect()->route('cart.checkout')->withError(__('The minimmum order value is').": ".money(floatval($restorant->minimum), env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true)))->withInput();
         }
         
 
@@ -401,9 +404,18 @@ class OrderController extends Controller
             $calculatedVAT=0;
             //Create the extras
             $extras=[];
+            $removedIngreds = [];
+            foreach ($item->attributes->removed_ingred as $key => $value) {
+                $Ingredient =  ItemIngredients::find($value);
+                $ingredName = $Ingredient->ingredients->name;
+                $ri = new \stdClass();
+                $ri->ingred_id = $value;
+                $ri->ingred_name = $ingredName;
+                $removedIngreds[] = $ri;
+            }
             $theItem=Items::findOrFail($item->attributes->id);
 
-            $itemSelectedPrice=$theItem->price;
+            $itemSelectedPrice= $theItem->discount_allowed == 'YES' ? $theItem->discounted_price : $theItem->price;
             $variantName="";
             if($item->attributes->variant){
                 //Find the variant
@@ -424,7 +436,7 @@ class OrderController extends Controller
             }
             //dd($extras);
             $totalCalculatedVAT+=$item->quantity*$calculatedVAT;
-            $order->items()->attach($item->attributes->id,['qty'=>$item->quantity,'extras'=>json_encode($extras),'vat'=>$theItem->vat,'vatvalue'=>$item->quantity*$calculatedVAT,'variant_name'=>$variantName,'variant_price'=>$itemSelectedPrice]);
+            $order->items()->attach($item->attributes->id,['qty'=>$item->quantity,'extras'=>json_encode($extras),'removed_ingredients'=>json_encode($removedIngreds),'vat'=>$theItem->vat,'vatvalue'=>$item->quantity*$calculatedVAT,'variant_name'=>$variantName,'variant_price'=>$itemSelectedPrice]);
         }
 
         //Set order vat

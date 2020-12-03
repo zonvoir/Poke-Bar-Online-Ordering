@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Akaunting\Money\Currency;
 use Akaunting\Money\Money;
 use App\Models\Variants;
+use App\ItemIngredients;
 
 class CartController extends Controller
 {
@@ -40,7 +41,7 @@ class CartController extends Controller
         if($item && $canAdd){
 
             //are there any extras
-            $cartItemPrice=$item->price;
+            $cartItemPrice=$item->discount_allowed == 'NO' ? $item->price : $item->discounted_price;
             $cartItemName=$item->name;
             $theElement="";
 
@@ -69,7 +70,10 @@ class CartController extends Controller
                 $cartItemPrice+=$item->extras()->findOrFail($value)->price;
                 $theElement.=$value." -- ".$item->extras()->findOrFail($value)->name."  --> ". $cartItemPrice." ->- ";
             }
-
+            foreach ($request->remIngred as $key => $value) {
+              $Ingredient =  ItemIngredients::find($value);
+              $cartItemName.="\n+ without ".$Ingredient->ingredients->name;
+            }
 
             Cart::add((new \DateTime())->getTimestamp(), $cartItemName, $cartItemPrice, $request->quantity, array('id'=>$item->id,'variant'=>$request->variantID, 'extras'=>$request->extras, 'removed_ingred' => $request->remIngred, 'restorant_id'=>$restID,'image'=>$item->icon,'friendly_price'=>  Money($cartItemPrice, env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))->format() ));
 
@@ -312,14 +316,13 @@ class CartController extends Controller
 
         $params = [
             'title' => 'Shopping Cart Checkout',
-            'tables' =>  ['ftype'=>'select','name'=>"",'id'=>"table_id",'placeholder'=>"Select table",'data'=>$tablesData,'required'=>true],
+            'tables' =>  ['ftype'=>'select','name'=>"",'id'=>"table_id",'placeholder'=>"Select table",'data'=>$tablesData],
             'restorant' => $restaurant,
             'timeSlots' => $timeSlots,
             'openingTime' => $restaurant->hours&&$restaurant->hours[$ourDateOfWeek."_from"]?$openingTime:null,
             'closingTime' => $restaurant->hours&&$restaurant->hours[$ourDateOfWeek."_to"]?$closingTime:null,
             'addresses' => $addresses
         ];
-
         //Open for all
         return view('cart')->with($params);
     }

@@ -57,7 +57,7 @@
     <h6 class="heading-small text-muted mb-4">{{ __('Order') }}</h6>
     <ul id="order-items">
         @foreach($order->items as $item)
-            <li><h4>{{ $item->pivot->qty." X ".$item->name }} -  @money( ($item->pivot->variant_price?$item->pivot->variant_price:$item->price), env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))  =  ( @money( $item->pivot->qty*($item->pivot->variant_price?$item->pivot->variant_price:$item->price), env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))
+            <li><h4>{{ $item->pivot->qty." X ".$item->name }} -  @money( ($item->pivot->variant_price?$item->pivot->variant_price:$item->price) , env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))  =  ( @money( $item->pivot->qty*($item->pivot->variant_price?$item->pivot->variant_price:$item->price), env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))
                 @hasrole('admin|driver|owner')
                     @if($item->pivot->vatvalue>0))
                     <span class="small">-- {{ __('VAT ').$item->pivot->vat."%: "}} ( @money( $item->pivot->vatvalue, env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true)) )</span>
@@ -95,6 +95,14 @@
                     </ul><br />
                 @endif
                 <br />
+                 @if (isset($item->pivot->removed_ingredients) && count(json_decode($item->pivot->removed_ingredients))>0)
+                    <span>{{ __('Removed Ingredients') }}</span><br />
+                    <ul>
+                        @foreach(json_decode($item->pivot->removed_ingredients) as $ri)
+                            <li> {{  $ri->ingred_name }}</li>
+                        @endforeach
+                    </ul><br />
+                @endif
             </li>
         @endforeach
     </ul>

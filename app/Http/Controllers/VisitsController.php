@@ -68,7 +68,7 @@ class VisitsController extends Controller
             $tablesData[$table->id]=$table->restoarea?$table->restoarea->name." - ".$table->name:$table->name;
         }
         return [
-           ['class'=>$class, 'ftype'=>'input','name'=>"Time of entry",'id'=>"",'placeholder'=>__('Time of entry'), 'required'=>true, 'value' =>  Carbon::now()->toDayDateTimeString()],
+           ['class'=>$class, 'ftype'=>'input','name'=>"customers.entry_time",'id'=>"entry_time",'placeholder'=>__('Time of entry'), 'required'=>true, 'value' =>  Carbon::now()->toDayDateTimeString()],
            ['class'=>$class, 'ftype'=>'duration','name'=>"Duration of visit(Hour)",'id'=>"duration", 'value' =>  1, 'required'=>true,],
            ['class'=>$class, 'ftype'=>'input','name'=>"Name",'id'=>"name",'placeholder'=>__('Name'),'required'=>true],
            ['class'=>$class, 'lableVsisibility'=>'invisible', 'ftype'=>'input','name'=>"Surname",'id'=>"sur_name",'placeholder'=>__('Surname')],
@@ -77,7 +77,7 @@ class VisitsController extends Controller
            ['class'=>$class, 'ftype'=>'select','name'=>"Table",'id'=>"table_id",'placeholder'=>"Select table",'data'=>$tablesData,'required'=>true],
            ['class'=>$class, 'ftype'=>'input','name'=>"Note",'id'=>"note",'placeholder'=>__('Custom note'),'required'=>false],
            ['class'=>$class, 'type'=>'hidden','ftype'=>'input','name'=>"Restaurant",'id'=>"restaurant_id",'placeholder'=>__('Restaurant'),'required'=>true,'value'=>$restaurant->id],
-           ['type'=>'hidden','ftype'=>'input','name'=>"entry_time",'id'=>"entry_time",'placeholder'=>__('Time of entry'),'required'=>true,'value' =>  Carbon::now()->toDayDateTimeString()],
+           ['type'=>'hidden','ftype'=>'input','name'=>"customers.created_at",'id'=>"created_at",'placeholder'=>__('customer.created_at'),'required'=>true,'value' =>  Carbon::now()->toDayDateTimeString()],
        ];
    }
    private function getFieldsFront($class="col-md-6",$restaurant=null){
@@ -98,7 +98,7 @@ class VisitsController extends Controller
             ['class'=>$class.' col-12', 'lableVsisibility'=>'invisible-', 'ftype'=>'input','name'=>"Surname",'id'=>"sur_name",'placeholder'=>__('surname'),'required'=>true],
             ['class'=>$class.' col-12', 'ftype'=>'input','name'=>"Email",'id'=>"email",'placeholder'=>__('Customer email'),'required'=>false],
             ['class'=>$class.' col-12', 'ftype'=>'input','name'=>"Phone",'id'=>"phone_number",'placeholder'=>__('Customer phone'),'required'=>false],
-            /*['class'=>'col-md-12', 'ftype'=>'select','name'=>"Table",'id'=>"table_id",'placeholder'=>"Select table",'data'=>$tablesData,'required'=>true],*/
+            ['class'=>'col-md-12', 'ftype'=>'select','name'=>"Table",'id'=>"table_id",'placeholder'=>"Select table",'data'=>$tablesData,'required'=>true],
             ['class'=>'col-md-12', 'ftype'=>'input','name'=>"Note",'id'=>"note",'placeholder'=>__('Custom note'),'required'=>false],
             ['class'=>$class, 'type'=>'hidden','ftype'=>'input','name'=>"Restaurant",'id'=>"restaurant_id",'placeholder'=>__('Restaurant'),'required'=>true,'value'=>$restaurant->id],
             ['class'=>$class, 'type'=>'hidden','ftype'=>'input','name'=>"entry_time",'id'=>"entry_time",'placeholder'=>__('Time of entry'),'required'=>true,'value' =>  Carbon::now()->toDayDateTimeString()],
@@ -118,13 +118,17 @@ class VisitsController extends Controller
         $class="col-md-4";
         $fields=$this->getFields($class);
         $fields[1]['required']=false;
+        $fields[9]['id']='';
         unset($fields[0]);unset($fields[3]);unset($fields[7]);unset($fields[8]);
         array_push($fields,['class'=>$class,'ftype'=>'select','name'=>"customers.created_by",'id'=>"by",'placeholder'=>"Select who created it",'data'=>["2"=>__('customers.him_self'),"1"=>__('customers.by_restaurant')],'required'=>false]);
-        array_push($fields,['class'=>$class,'editclass'=>' daterange ','ftype'=>'input','name'=>"customers.visit_time",'id'=>"created_at",'placeholder'=>"Created time",'required'=>false]);
-
+        array_push($fields,['class'=>$class,'editclass'=>' daterange ','ftype'=>'input','name'=>"customers.visit_time",'id'=>"created_at",'placeholder'=>"customers.visit_time",'required'=>false]);
+        array_push($fields,['class'=>$class,'ftype'=>'input','name'=>"customers.entry_time",'id'=>"entry_time",'placeholder'=>"Entry time",'required'=>false]);
+        array_push($fields,['class'=>$class,'ftype'=>'input','name'=>"customers.out_time",'id'=>"out_time",'placeholder'=>"Out time",'required'=>false]);
         $items = $this->provider::where('restaurant_id',$this->getRestaurant()->id);
-
         //Filters
+        if(\Request::exists('duration')&&\Request::input('duration').""!=""){
+            $items = $items->where('duration',\Request::input('duration'));
+        }
         if(\Request::exists('table_id')&&\Request::input('table_id').""!=""){
             $items = $items->where('table_id',\Request::input('table_id'));
         }
@@ -147,9 +151,8 @@ class VisitsController extends Controller
             $dates=explode(" - ",\Request::input('created_at'));
             $from = (Carbon::createFromFormat('d/m/Y',$dates[0]))->toDateString();
             $to = (Carbon::createFromFormat('d/m/Y',$dates[1]))->toDateString();
-            
             //Apply dated
-            $items->whereDate('created_at', '>=',$from)->whereDate('created_at', '<=',$to);
+            $items->whereDate('entry_time', '>=',$from)->whereDate('out_time', '<=',$to);
 
         }
 
@@ -164,12 +167,14 @@ class VisitsController extends Controller
                     "visit_id"=>$item->id,
                     "table"=>isset($item->table->name) ? $item->table->name : 'Pickup',
                     "area"=>isset($item->table->restoarea) ? $item->table->restoarea ?$item->table->restoarea->name:"" : '',
-                    "created"=>$item->created_at,
-                    "customer_name"=>$item->name,
+                    "customer_name"=>isset($item->surname) ? $item->name.' '.$item->surname : $item->name,
                     "customer_email"=>$item->email,
                     "customer_phone_number"=>$item->phone_number,
                     "note"=>$item->note,
                     "by"=>$item->by.""=="1"?__('customers.by_restaurant'):__('customers.him_self'),
+                    'duration_of_visit' => $item->duration.' Hour',
+                    'visit_time' => $item->out_time ? Carbon::parse($item->entry_time)->toDayDateTimeString().' To '.Carbon::parse($item->out_time)->toDayDateTimeString() : Carbon::parse($item->entry_time)->toDayDateTimeString().' Out is remaining!',
+                    "created"=> Carbon::parse($item->created_at)->toDayDateTimeString()
                 );
                 array_push($itemsForExport,$item);
             }
@@ -200,6 +205,11 @@ class VisitsController extends Controller
      */
     public function create()
     {
+        $fields = $this->getFieldsFront();
+        $fields[3]['required'] = false;
+        $fields[3]['lableVsisibility'] = '';
+        unset($fields[8]);unset($fields[9]);
+        /*dd($fields);*/
         $this->authChecker();
         return view('general.form', ['setup' => [
             'inrow'=>true,
@@ -209,7 +219,7 @@ class VisitsController extends Controller
             'iscontent'=>true,
             'action'=>route($this->webroute_path.'store'),
         ],
-        'fields'=>$this->getFieldsFront()]);
+        'fields'=>$fields]);
     }
 
     /**
@@ -224,10 +234,13 @@ class VisitsController extends Controller
         $item = $this->provider::create([
             'name'=>$request->name,
             'restaurant_id'=>$this->getRestaurant()->id,
+            'surname' => $request->sur_name,
             /*'table_id'=>$request->table_id,*/
             'phone_number'=>$request->phone_number,
             'email'=>$request->email,
-            'note'=>$request->note
+            'note'=>$request->note,
+            'duration'=>$request->duration,
+            'entry_time'=>Carbon::parse($request->entry_time)->toDateTimeString()
         ]);
         $item->save();
         return redirect()->route($this->webroute_path.'index')->withStatus(__('crud.item_has_been_added',['item'=>__($this->title)]));
@@ -255,14 +268,20 @@ class VisitsController extends Controller
     { 
         $this->authChecker();
         $item=$this->provider::findOrFail($id);
+        $class="col-md-4";
         $fields=$this->getFields();
-        $fields[0]['value']=Carbon::now()->toDayDateTimeString();
+         array_push($fields,['ftype'=>'input','name'=>"customers.out_time",'id'=>"out_time",'placeholder'=>"Out time",'required'=>false, 'class'=>'col-md-6']);
+        $fields[0]['value']=$item->entry_time ? $item->entry_time : Carbon::createFromFormat('Y-m-d H:i:s', Carbon::today())->toDateTimeString();
         $fields[1]['value']=$item->duration;
         $fields[2]['value']=$item->name;
-        $fields[3]['value']=$item->sur_name;
+        $fields[3]['value']=$item->surname;
         $fields[4]['value']=$item->email;
         $fields[5]['value']=$item->phone_number;
-        $fields[6]['value']=$item->note;
+        $fields[6]['value']=$item->table_id;
+        $fields[7]['value']=$item->note;
+        $fields[10]['value']=$item->out_time ? $item->out_time : Carbon::createFromFormat('Y-m-d H:i:s', Carbon::today())->toDateTimeString();
+        unset($fields[8]);unset($fields[9]);
+        $fields[3]['lableVsisibility'] = '';
         $parameter=[];
         $parameter[$this->parameter_name]=$id;
         return view('general.form', ['setup' => [
@@ -286,15 +305,18 @@ class VisitsController extends Controller
      */
     public function update(Request $request, $id)
     {
-
+        //dd($request->all());
         $this->authChecker();
         $item=$this->provider::findOrFail($id);
         $item->name=$request->name;
+        $item->surname=$request->sur_name;
         $item->table_id=$request->table_id;
         $item->email=$request->email;
         $item->phone_number=$request->phone_number;
         $item->note=$request->note;
-
+        $item->duration=$request->duration;
+        $item->entry_time=Carbon::parse($request->entry_time)->toDateTimeString();
+        $item->out_time=Carbon::parse($request->out_time)->toDateTimeString();
         $item->update();
         return redirect()->route($this->webroute_path.'index')->withStatus(__('crud.item_has_been_updated',['item'=>__($this->title)]));
 
@@ -322,7 +344,11 @@ class VisitsController extends Controller
 
     public function register($restaurant_id){
         $restaurant=Restorant::findOrFail($restaurant_id);
-       // dd($this->getFields('col-md-6',$restaurant));
+        $fields = $this->getFields('col-md-6',$restaurant);
+        $fields[0]['disabled'] = true;
+        if(\Request::has('table')){
+            $fields[6]['value'] = \Request::input('table');
+        }
         return view('general.form_front', ['setup' => [
             'inrow'=>true,
             'action_link'=>route('vendor',['alias'=>$restaurant->subdomain]),
@@ -331,9 +357,8 @@ class VisitsController extends Controller
             'iscontent'=>true,
             'action'=>route('register.visit.store'),
         ],
-        'fields'=>$this->getFieldsFront('col-md-6',$restaurant)]);
+        'fields'=>$fields]);
     }
-
 
     public function registerstore(Request $request)
     {
@@ -347,7 +372,7 @@ class VisitsController extends Controller
             'note'=>$request->note,
             'by'=>2,
             'surname'=>$request->sur_name,
-            'entry_time'=>$request->entry_time,
+            'entry_time'=>Carbon::parse($request->entry_time)->toDateTimeString(),
             'duration'=>$request->duration,
 
         ]);
@@ -371,5 +396,16 @@ class VisitsController extends Controller
         if($item->save()){
           return response()->json(['status' => 'ok','msg'=>'visited successfully!','data' => $item]);
       }
+  }
+  public function updateOutTime(Request $request)
+    {
+        $this->authChecker();
+        $item=$this->provider::findOrFail($request->id);
+        $item->out_time=Carbon::parse($request->date)->toDateTimeString();
+        if($item->update()){ 
+        return response()->json(['status'=>'success', 'message'=>'Out time updated!']);
+        }else{
+            return response()->json(['status'=>'failed', 'message'=>'Network error!']);
+        }
   }
 }

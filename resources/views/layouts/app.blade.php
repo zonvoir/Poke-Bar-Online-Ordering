@@ -112,12 +112,12 @@
         <script src="{{ asset('vendor') }}/flatpickr/flatpickr.js"></script>
         
         <!-- OneSignal -->
-        <script src="{{ asset('vendor') }}/OneSignalSDK/OneSignalSDK.js" async=""></script>
+        <!-- <script src="{{ asset('vendor') }}/OneSignalSDK/OneSignalSDK.js" async=""></script>
         <script>
              var ONESIGNAL_APP_ID = "{{ env('ONESIGNAL_APP_ID') }}";
              var USER_ID = '{{  auth()->user()?auth()->user()->id:"" }}';
-        </script>
-        <script src="{{ asset('custom') }}/js/onesignal.js"></script>
+        </script> -->
+       <!--  <script src="{{ asset('custom') }}/js/onesignal.js"></script> -->
 
         @stack('js')
         @yield('js')

@@ -12,8 +12,11 @@
                 <i class="ni ni-basket text-success"></i> <?php echo e(__('Live Orders')); ?><div class="blob red"></div>
             </a>
         </li>
-    
-    
+        <li class="nav-item">
+            <a class="nav-link" href="<?php echo e(route('admin.restaurant.assistant')); ?>">
+                <i class="ni ni-email-83 text-success"></i> <?php echo e(__('Assistant')); ?><div class="blob red"></div>
+            </a>
+        </li>
         <li class="nav-item">
             <a class="nav-link" href="<?php echo e(route('orders.index')); ?>">
                 <i class="ni ni-basket text-orange"></i> <?php echo e(__('Orders')); ?>

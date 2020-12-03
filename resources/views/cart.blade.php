@@ -61,10 +61,7 @@
                  @endif
                   
                  <!-- LOCAL ORDERING -->
-                 
-
                 
-
                  <!-- Comment -->
                  @include('cart.comment')
 

@@ -21,6 +21,7 @@ use App\Tables;
 use Carbon\Carbon;
 use App\Ingredients;
 use App\ItemIngredients;
+use App\RequestAssistant;
 
 
 class FrontEndController extends Controller
@@ -461,14 +462,35 @@ private function withinArea($point, $polygon,$n)
     return $oddNodes;
 }
 
-
+public function search($array, $key, $value) { 
+    $results = array(); 
+    if (is_array($array)) { 
+        if (isset($array[$key]) && $array[$key] == $value) { 
+            $results[] = $array; 
+        } 
+        foreach ($array as $subarray) { 
+            $results = array_merge($results,  
+                    $this->search($subarray, $key, $value)); 
+        } 
+    } 
+    return $results; 
+} 
 
 public function restorant($alias){
+    $restorant = Restorant::where('subdomain',$alias)->first();
+    if(\Request::exists('table')){
+        if(sizeof($restorant->tables)>0){
+            if(sizeof($this->search($restorant->tables->toArray(),'id',\Request::input('table')))>0){
+                return redirect()->route('register.visit',$restorant->id.'?table='.\Request::input('table'));
+            }else{
+                return redirect()->route('vendor',['alias'=>$alias])->withError(__('Table not available!'));
+            }
+        }
+    }
     $subDomain=$this->getSubDomain();
     if($subDomain&&$alias!==$subDomain){
         return redirect()->route('restorant',$subDomain);
     }
-    $restorant = Restorant::where('subdomain',$alias)->first();
     if($restorant->active == 1){
         $restorant->increment('views');
 
@@ -553,6 +575,29 @@ public function restorant($alias){
         $res = $geocoder->getAddressForCoordinates($request->lat, $request->lng);
         return response()->json([
             'data' => $res,
+            'status' => true,
+            'errMsg' => ''
+        ]);
+    }
+    public function sendMessage(Request $request)
+    {
+         RequestAssistant::create([
+            'chat_id'=>$request->chatId,
+            'message'=>$request->msg,
+            'restorant_id'=>$request->restorant_id,
+            'reciever'=>$request->sendTo
+        ]);
+        return response()->json([
+            'data' => $request->all(),
+            'status' => true,
+            'errMsg' => ''
+        ]);
+    }
+    public function getMessage(Request $request)
+    {
+        $data = RequestAssistant::where(['chat_id'=>$request->chatId,'restorant_id'=>$request->restorant_id])->orderBy('id','DESC')->pluck('response_msg')->first();
+        return response()->json([
+            'data' => $data,
             'status' => true,
             'errMsg' => ''
         ]);

@@ -197,6 +197,13 @@ function chageDeliveryCost(deliveryCost){
       dineTypeSwitch($(this).val());
     })
   }
+  function dineTypeSwitcher1(){
+    $('input:radio[name="dineType"]').change(function() {
+      $('.delTimeTS').hide();
+      $('.picTimeTS').show();
+      dineTypeSwitch($(this).val());
+    })
+  }
 
   function paymentTypeSwitcher(){
     $('input:radio[name="paymentType"]').change(
@@ -254,7 +261,8 @@ window.onload = function () {
   deliveryTypeSwitcher();
 
   //For Dine in / takeout
-  dineTypeSwitcher();
+  /*dineTypeSwitcher();*/
+  dineTypeSwitcher1();
 
   //Activate address switcher
   deliveryAddressSwithcer();

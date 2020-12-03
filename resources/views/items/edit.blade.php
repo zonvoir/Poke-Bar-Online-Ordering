@@ -54,7 +54,7 @@
                     <div class="card-body px-lg-5 py-lg-5">
                         <form role="form" method="post" action="{{ route('item.ingredients.store', $item) }}" enctype="multipart/form-data">
                             @csrf
-                            @include('partials.select',['name'=>'Ingredients','id'=>'ingredients_id','required'=>false,'data' =>$ingredients])
+                            @include('partials.select',['name'=>'Ingredients','id'=>'ingredients_id','required'=>false,'data' =>$ingredients,'class'=>'col-md-12'])
                             @include('partials.input',['name'=>'Quantity','id'=>'ingredients_qty','required'=>true,'placeholder'=>'Quantity'])
                             @include('partials.input',['type'=>"hidden",'name'=>'','id'=>'ingredient_id','required'=>false,'placeholder'=>'id'])
                             @include('partials.toggle',['name'=>'Modifiable','checked'=>'checked','id'=>'modifiable','required'=>true])
@@ -133,179 +133,194 @@
                                         </span>
                                         @endif
                                     </div>
-                                    @include('partials.input',['id'=>'vat','name'=>__('VAT percentage( calculated into item price )'),'placeholder'=>__('Item VAT percentage'),'value'=>$item->vat,'required'=>false,'type'=>'number'])
-                                    <?php $image=['name'=>'item_image','label'=>__('Item Image'),'value'=> $item->logom,'style'=>'width: 290px; height:200']; ?>
-                                    @include('partials.images',$image)
-                                    @include('partials.toggle',['id'=>'itemAvailable','name'=>'Item available','checked'=>($item->available == 1)])
-                                    @include('partials.toggle',['id'=>'has_variants','name'=>'Enable variants','checked'=>($item->has_variants==1)])
+                                    <div class="form-group{{ $errors->has('item_dicount_price') ? ' has-danger' : '' }}">
+                                       @include('partials.toggle',['id'=>'discountAllowed','name'=>'Discount allowed','checked'=>($item->discount_allowed == 'YES' ? 1 : 0)])
+                                       <input type="number" step="any" name="item_dicount_price" id="item_dicount_price" class="form-control form-control-alternative{{ $errors->has('item_dicount_price') ? ' is-invalid' : '' }}" placeholder="{{ __('Enter Discounted Price') }}" value="{{ old('item_dicount_price', $item->discounted_price) }}" autofocus>
+                                       <span class="text-danger d-none"></span>
+                                       @if ($errors->has('item_dicount_price'))
+                                       <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $errors->first('item_dicount_price') }}</strong>
+                                    </span>
+                                    @endif
                                 </div>
-                                <div class="col-md-6">
+
+                                @include('partials.input',['id'=>'vat','name'=>__('VAT percentage( calculated into item price )'),'placeholder'=>__('Item VAT percentage'),'value'=>$item->vat,'required'=>false,'type'=>'number'])
+                                <?php $image=['name'=>'item_image','label'=>__('Item Image'),'value'=> $item->logom,'style'=>'width: 290px; height:200']; ?>
+                                @include('partials.images',$image)
+                                @include('partials.toggle',['id'=>'itemAvailable','name'=>'Item available','checked'=>($item->available == 1)])
+                                @include('partials.toggle',['id'=>'has_variants','name'=>'Enable variants','checked'=>($item->has_variants==1)])
+                            </div>
+                            <div class="col-md-6">
+                            </div>
+                        </div>
+                        <div class="text-center">
+                           <button type="submit" class="btn btn-success mt-4">{{ __('Save') }}</button>
+                       </div>
+                   </form>
+                   <div class="text-center">
+                    <form action="{{ route('items.destroy', $item) }}" method="post">
+                        @csrf
+                        @method('delete')
+                        <button type="button" class="btn btn-danger mt-4" onclick="confirm('{{ __("Are you sure you want to delete this item?") }}') ? this.parentElement.submit() : ''">{{ __('Delete') }}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-xl-6 mb-6 mb-xl-0">
+    <br/>
+
+    @if ($item->has_variants==1)
+    <div class="card card-profile shadow">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <h5 class="h3 mb-0">{{ __('Variants') }}</h5>
+                </div>
+                <div class="col-6 text-right">
+                    <a class="btn btn-secondary btn-sm" href="{{  route('items.options.index',$item->id)}}">{{ __('Edit Options')}}</a>
+                    <a class="btn btn-success btn-sm" href="{{  route('items.variants.create',['item'=>$item->id])}}">{{ __('Add Variant')}}</a>
+                </div>
+
+            </div>
+        </div>
+        <div class="card-body">
+
+
+
+            @include('items.variants.content')
+            <div class="table-responsive">
+                <table class="table align-items-center table-flush">
+                    <thead class="thead-light">
+                        @yield('thead')
+                    </thead>
+                    <tbody>
+                        @yield('tbody')
+                    </tbody>
+                </table>
+            </div>
+
+
+        </div>
+
+    </div>
+
+    <br />
+    @endif
+    <div class="card card-profile shadow">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col-8">
+                    <h5 class="h3 mb-0">{{ __('Extras') }}</h5>
+                </div>
+                <div class="col-4 text-right">
+                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal-new-extras" onClick=(setRestaurantId({{ $restorant_id }}))>{{ __('Add') }}</button>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-items-center">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col" class="sort" data-sort="name">{{ __('Name') }}</th>
+                        <th scope="col" class="sort" data-sort="name">{{ __('Price') }}</th>
+                        @if ($item->has_variants==1)<th scope="col">{{ __('For') }}</th>@endif
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody class="list">
+                    <script>
+                        var extras=<?php echo $item->extras->load('variants') ?>;
+                        console.log(extras);
+                    </script>
+                    @foreach($item->extras as $extra)
+                    <tr>
+                        <th scope="row">{{ $extra->name }}</th>
+                        <td class="budget">@money( $extra->price, env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))</td>
+                        @if ($item->has_variants==1)<td class="budget">{{ $extra->extra_for_all_variants?__('All variants'):__('Selected') }}</td>@endif
+                        <td class="text-right">
+                            <div class="dropdown">
+                                <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+
+                                    <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modal-new-extras" onClick=(setExtrasId({{ $extra->id }}))>Edit</button>
+                                    <form action="{{ route('extras.destroy',[$item, $extra]) }}" method="post">
+                                        @csrf
+                                        @method('delete')
+
+                                        <button type="button" class="dropdown-item" onclick="confirm('{{ __("Are you sure you want to delete this extras?") }}') ? this.parentElement.submit() : ''">
+                                            {{ __('Delete') }}
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
-                            <div class="text-center">
-                             <button type="submit" class="btn btn-success mt-4">{{ __('Save') }}</button>
-                         </div>
-                     </form>
-                     <div class="text-center">
-                        <form action="{{ route('items.destroy', $item) }}" method="post">
-                            @csrf
-                            @method('delete')
-                            <button type="button" class="btn btn-danger mt-4" onclick="confirm('{{ __("Are you sure you want to delete this item?") }}') ? this.parentElement.submit() : ''">{{ __('Delete') }}</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
-    <div class="col-xl-6 mb-6 mb-xl-0">
-        <br/>
-
-        @if ($item->has_variants==1)
-        <div class="card card-profile shadow">
-            <div class="card-header">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <h5 class="h3 mb-0">{{ __('Variants') }}</h5>
-                    </div>
-                    <div class="col-6 text-right">
-                        <a class="btn btn-secondary btn-sm" href="{{  route('items.options.index',$item->id)}}">{{ __('Edit Options')}}</a>
-                        <a class="btn btn-success btn-sm" href="{{  route('items.variants.create',['item'=>$item->id])}}">{{ __('Add Variant')}}</a>
-                    </div>
-
+    <div class="card card-profile shadow" style="margin-top:100px">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col-8">
+                    <h5 class="h3 mb-0">{{ __('Ingredients') }}</h5>
                 </div>
-            </div>
-            <div class="card-body">
-
-
-
-                @include('items.variants.content')
-                <div class="table-responsive">
-                    <table class="table align-items-center table-flush">
-                        <thead class="thead-light">
-                            @yield('thead')
-                        </thead>
-                        <tbody>
-                            @yield('tbody')
-                        </tbody>
-                    </table>
+                <div class="col-4 text-right">
+                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal-new-ingredients" onClick=(setRestaurantId({{ $restorant_id }}))>{{ __('Add') }}</button>
                 </div>
-
-
-            </div>
-
-        </div>
-
-        <br />
-        @endif
-        <div class="card card-profile shadow">
-            <div class="card-header">
-                <div class="row align-items-center">
-                    <div class="col-8">
-                        <h5 class="h3 mb-0">{{ __('Extras') }}</h5>
-                    </div>
-                    <div class="col-4 text-right">
-                        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal-new-extras" onClick=(setRestaurantId({{ $restorant_id }}))>{{ __('Add') }}</button>
-                    </div>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table align-items-center">
-                    <thead class="thead-light">
-                        <tr>
-                            <th scope="col" class="sort" data-sort="name">{{ __('Name') }}</th>
-                            <th scope="col" class="sort" data-sort="name">{{ __('Price') }}</th>
-                            @if ($item->has_variants==1)<th scope="col">{{ __('For') }}</th>@endif
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody class="list">
-                        <script>
-                            var extras=<?php echo $item->extras->load('variants') ?>;
-                            console.log(extras);
-                        </script>
-                        @foreach($item->extras as $extra)
-                        <tr>
-                            <th scope="row">{{ $extra->name }}</th>
-                            <td class="budget">@money( $extra->price, env('CASHIER_CURRENCY','usd'),env('DO_CONVERTION',true))</td>
-                            @if ($item->has_variants==1)<td class="budget">{{ $extra->extra_for_all_variants?__('All variants'):__('Selected') }}</td>@endif
-                            <td class="text-right">
-                                <div class="dropdown">
-                                    <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-
-                                        <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modal-new-extras" onClick=(setExtrasId({{ $extra->id }}))>Edit</button>
-                                        <form action="{{ route('extras.destroy',[$item, $extra]) }}" method="post">
-                                            @csrf
-                                            @method('delete')
-
-                                            <button type="button" class="dropdown-item" onclick="confirm('{{ __("Are you sure you want to delete this extras?") }}') ? this.parentElement.submit() : ''">
-                                                {{ __('Delete') }}
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
             </div>
         </div>
-        <div class="card card-profile shadow" style="margin-top:100px">
-            <div class="card-header">
-                <div class="row align-items-center">
-                    <div class="col-8">
-                        <h5 class="h3 mb-0">{{ __('Ingredients') }}</h5>
-                    </div>
-                    <div class="col-4 text-right">
-                        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal-new-ingredients" onClick=(setRestaurantId({{ $restorant_id }}))>{{ __('Add') }}</button>
-                    </div>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table align-items-center">
-                    <thead class="thead-light">
-                        <tr>
-                            <th scope="col" class="sort" data-sort="name">{{ __('Name') }}</th>
-                            <th scope="col" class="sort" data-sort="quantity">{{ __('Quantity') }}</th>
-                            <th scope="col" class="sort" data-sort="modifiable">{{ __('Modifiable') }}</th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody class="list">
-                        @if(isset($item->ItemIngredients) && !empty($item->ItemIngredients) && !$item->ItemIngredients->isEmpty())
-                        @foreach($item->ItemIngredients as $ingredient)
-                        <tr>
-                            <th scope="row">{{ $ingredient->ingredients->name }}</th>
-                            <td class="row">{{ $ingredient->quantity }}</td>
-                            <td class="">{{ $ingredient->modifiable }}</td>
-                            <td class="text-right">
-                                <div class="dropdown">
-                                    <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                        <!-- <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modal-new-ingredients" onClick=(setIngredientsId({{ $ingredient->id }}))>Edit</button> -->
-                                        <form action="{{ route('item.ingredients.destroy',[$item, $ingredient]) }}" method="post">
-                                            @csrf
-                                            @method('delete')
-                                            <button type="button" class="dropdown-item" onclick="confirm('{{ __("Are you sure you want to delete this ingredient ?") }}') ? this.parentElement.submit() : ''">
-                                                {{ __('Delete') }}
-                                            </button>
-                                        </form>
-                                    </div>
+        <div class="table-responsive">
+            <table class="table align-items-center">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col" class="sort" data-sort="name">{{ __('Name') }}</th>
+                        <th scope="col" class="sort" data-sort="quantity">{{ __('Quantity') }}</th>
+                        <th scope="col" class="sort" data-sort="modifiable">{{ __('Modifiable') }}</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody class="list">
+                    <script>
+                        var ingredients=<?php echo $item->ItemIngredients ?>;
+                        console.log(ingredients);
+                    </script>
+                    @if(isset($item->ItemIngredients) && !empty($item->ItemIngredients) && !$item->ItemIngredients->isEmpty())
+                    @foreach($item->ItemIngredients as $ingredient)
+                    <tr>
+                        <th scope="row">{{ $ingredient->ingredients->name }}</th>
+                        <td class="row">{{ $ingredient->quantity }}</td>
+                        <td class="">{{ $ingredient->modifiable }}</td>
+                        <td class="text-right">
+                            <div class="dropdown">
+                                <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                    <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modal-new-ingredients" onClick=(setIngredientsId({{ $ingredient->id }}))>Edit</button>
+                                    <form action="{{ route('item.ingredients.destroy',[$item, $ingredient]) }}" method="post">
+                                        @csrf
+                                        @method('delete')
+                                        <button type="button" class="dropdown-item" onclick="confirm('{{ __("Are you sure you want to delete this ingredient ?") }}') ? this.parentElement.submit() : ''">
+                                            {{ __('Delete') }}
+                                        </button>
+                                    </form>
                                 </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                        @endif
-                    </tbody>
-                </table>
-            </div>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                    @endif
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 </div>
 @include('layouts.footers.auth')
 </div>
@@ -340,17 +355,48 @@
             ingredients.forEach(element => {
                 if(element.id==id){
                     $('#modal-title-new-ingredients').html("Edit option");
-                    $('#ingredients_name').val(element.name);
-                    $('#ingredient_id').val(element.id);
+                    $('#ingredients_id').val(element.ingredient_id);
                     $('#ingredients_qty').val(element.quantity);
-                    $('#modifiable').prop('checked',element.modifiable == 'YES' ? true : false);
+                    if(element.modifiable == 'YES'){
+                        $('#modifiable').prop('checked',true);
+                    }else{
+                        $('#modifiable').removeAttr('checked');
+                    }
                 }
             });
         }
         $(document).ready(function(){
+
+         /* $('#modal-new-ingredients').on('show.bs.modal', function() {
+            $('#ingredients_id').select2();
+        })
+
+          $('#modal-new-ingredients').on('hidden.bs.modal', function() {
+            $('#ingredients_id').select2('destroy');
+        })*/
+
+
             $('#ingredients_id').select2({
                 dropdownParent: $('#modal-new-ingredients')
             });
+            $("#discountAllowed").change(function(){
+                if($(this).prop('checked') == true){
+                    $("#item_dicount_price").val(0);
+                    /*$("#item_dicount_price").removeClass('d-none');*/
+                    /*$("#item_dicount_price").attr('required','required');*/
+                }else{
+                    $("#item_dicount_price").val('');
+                    /*$("#item_dicount_price").addClass('d-none');*/
+                    /*$("#item_dicount_price").removeAttr('required');*/
+                }
+            })
+            $("#item_dicount_price").keyup(function(){
+               $(this).siblings('span').addClass('d-none')
+               if(parseFloat($(this).val()) > parseFloat($('#item_price').val())){
+                $(this).val(0);
+                $(this).siblings('span').removeClass('d-none').html('Discount price should less than item price!');
+            }
+        })
         })
     </script>
     @endsection

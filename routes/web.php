@@ -22,13 +22,12 @@ Route::post('/search/location', 'FrontEndController@getCurrentLocation')->name('
 
 Auth::routes(['register' => !config('app.isqrsaas')]);
 
-
-
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::post('/paddle', 'PlansController@paddle')->name('paddle');
 
-
+Route::post('/send-message', 'FrontEndController@sendMessage')->name('send-message');
+Route::get('/get-message', 'FrontEndController@getMessage')->name('get-message');
 
 //Route::group(['middleware' => 'auth'], function () {
 Route::group(['middleware' => ['auth']], function () {
@@ -61,11 +60,12 @@ Route::group(['middleware' => ['auth']], function () {
             // Areas
             Route::resource('visits', 'VisitsController');
             Route::get('visits/del/{visit}', 'RestoareasController@destroy')->name('visits.delete');
-
-
+            Route::get('assistant', 'RequestAssitantController@getAllChat')->name('assistant');
+            /*Route::get('/assistant', 'RequestAssitantController@edit')->name('assistant.edit');*/
         });
 
     });
+    Route::post('update-out-time','VisitsController@updateOutTime')->name('update-out-time');
 
     Route::resource('cities', 'CitiesController');
     Route::get('/cities/del/{city}', 'CitiesController@destroy')->name('cities.delete');
@@ -102,8 +102,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('liveapi', 'OrderController@liveapi');
     Route::get('driverlocations', 'DriverController@driverlocations');
     Route::get('restaurantslocations', 'RestorantController@restaurantslocations');
-
-
 
 
     Route::get('live', 'OrderController@live');
